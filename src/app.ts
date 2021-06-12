@@ -16,8 +16,14 @@ const app = express();
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, './public')));
+
+/**
+ * The following is needed to turn on sessions for logged in users.
+ *  disable for development.
+ */
+
 app.use(expressSession({
-  secret: process.env.SUPER_SECRET_KEY || '',
+  secret: 'my-super-secret-squirrel-key',
   cookie: {},
 }));
 
@@ -27,7 +33,7 @@ const { BAD_REQUEST } = StatusCodes;
 app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
   // TODO: Refactor later that sends back more than just a 400
   // Because not all requests that fail are the fault of the client
-  console.log('Our custom error handler');
+  console.log('Error handler: ', err);
   log.error(err);
   res.status(BAD_REQUEST).json({
     error: err.message,
