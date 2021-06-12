@@ -19,7 +19,7 @@ baseRouter.get('/', async (req, res) => {
  * This route will:
  * 1. verify user in DB
  * 2. log user into the API and start a session
- * 3. redirct to user's workstation
+ * --- TODO --- 3. redirct to user's workstation
  */
 baseRouter.post('/', async (req, res) => {
   // get user info from frontend
