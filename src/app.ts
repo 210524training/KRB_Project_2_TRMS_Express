@@ -6,7 +6,7 @@ import StatusCodes from 'http-status-codes';
 
 import dotenv from 'dotenv';
 
-import log from './log';
+import log from './utils/log';
 import baseRouter from './routes';
 
 dotenv.config({ path: `${__dirname}/.env` });
