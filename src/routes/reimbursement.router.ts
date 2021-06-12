@@ -1,4 +1,6 @@
 import { Router } from 'express';
+import reimbursementService from '../services/reimbursement/reimbursement.service';
+import log from '../utils/log';
 
 const reimbursementRouter = Router();
 
@@ -8,7 +10,7 @@ const reimbursementRouter = Router();
  */
 reimbursementRouter.get('/', async (req, res) => {
   console.log('This route will retrieve reimbursement requests from the user\'s bin');
-  res.send(200);
+  res.sendStatus(200);
 });
 
 /**
@@ -17,7 +19,45 @@ reimbursementRouter.get('/', async (req, res) => {
  */
 reimbursementRouter.post('/', async (req, res) => {
   console.log('This route will create new reimbursement requests');
-  res.send(201);
+
+  const {
+    employeeName,
+    employeeEmail,
+    eventStartDate,
+    eventStartTime,
+    eventLocation,
+    eventDescription,
+    eventCost,
+    gradingFormat,
+    eventType,
+    justification,
+    attachments,
+  } = req.body;
+
+  try {
+    const isSubmissionSuccessful = await reimbursementService.constructNewReimbursementRequest(
+      employeeName,
+      employeeEmail,
+      eventStartDate,
+      eventStartTime,
+      eventLocation,
+      eventDescription,
+      eventCost,
+      gradingFormat,
+      eventType,
+      justification,
+      attachments,
+    );
+
+    if(isSubmissionSuccessful) {
+      res.send(201);
+    } else {
+      res.send(400);
+    }
+  } catch(err) {
+    log.error(err);
+    res.sendStatus(400);
+  }
 });
 
 /**
@@ -26,7 +66,7 @@ reimbursementRouter.post('/', async (req, res) => {
  */
 reimbursementRouter.put('/', async (req, res) => {
   console.log('This route will update reimbursment requests');
-  res.send(202);
+  res.sendStatus(202);
 });
 
 export default reimbursementRouter;

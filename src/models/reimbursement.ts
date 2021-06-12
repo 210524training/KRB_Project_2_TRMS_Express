@@ -1,11 +1,11 @@
 export default class Reimbursement {
   constructor(
-    public docId: string,
+    public docid: string,
     public employeeName: string,
     public employeeEmail: string,
-    public submissionDate: Date,
+    public submissionDate: string,
     public eventStartDate: Date,
-    public eventStartTime: Date,
+    public eventStartTime: string,
     public eventLocation: string,
     public eventDescription: string,
     public eventCost: number,
