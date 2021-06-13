@@ -65,6 +65,22 @@ class ReimbursementService {
     const isSentToDynamo = await this.data.createNewReimbursementRequest(request);
     return isSentToDynamo;
   }
+
+  /**
+   * Allows user to update request's final grade attribute
+   */
+  async updateFinalGrade(docid: string, finalgrade: string): Promise<boolean> {
+    // Check to verify docid exists and matches provided docid
+    const verifyDocId = await this.data.getReimbursementRequestByDocId(docid);
+    if(verifyDocId.docid === docid) {
+      const isUpdated = await this.data.updateRequestFinalGrade(docid, finalgrade);
+      if(isUpdated) {
+        return true;
+      }
+      throw new Error('Grade could not be updated');
+    }
+    throw new Error('Reimburesment request does not exist');
+  }
 }
 
 export default new ReimbursementService();

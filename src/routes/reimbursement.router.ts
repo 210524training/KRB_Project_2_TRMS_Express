@@ -50,9 +50,9 @@ reimbursementRouter.post('/', async (req, res) => {
     );
 
     if(isSubmissionSuccessful) {
-      res.send(201);
+      res.sendStatus(201);
     } else {
-      res.send(400);
+      res.sendStatus(400);
     }
   } catch(err) {
     log.error(err);

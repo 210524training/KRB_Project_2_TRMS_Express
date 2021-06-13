@@ -21,6 +21,45 @@ class ReimbursementDAO {
     }
     return false;
   }
+
+  async getReimbursementRequestByDocId(docid: string): Promise<Reimbursement> {
+    const params: DocumentClient.GetItemInput = {
+      TableName: 'trms_reimbursements',
+      Key: {
+        docid,
+      },
+    };
+
+    const result = await this.docClient.get(params).promise();
+    if(result.Item) {
+      log.debug(result);
+      return result.Item as Reimbursement;
+    }
+    throw new Error('Reimbursement request not found');
+  }
+
+  async updateRequestFinalGrade(docid: string, finalgrade: string): Promise<boolean> {
+    const params: DocumentClient.UpdateItemInput = {
+      TableName: 'trms_reimbursements',
+      Key: {
+        docid,
+      },
+      UpdateExpression: 'SET #fg = :v',
+      ExpressionAttributeNames: {
+        '#fg': 'finalgrade',
+      },
+      ExpressionAttributeValues: {
+        ':v': finalgrade,
+      },
+      ReturnValues: 'UPDATED_NEW',
+    };
+
+    const isUpdated = await this.docClient.update(params).promise();
+    if(isUpdated) {
+      return true;
+    }
+    throw new Error('Cannot update request');
+  }
 }
 
 export default new ReimbursementDAO();
