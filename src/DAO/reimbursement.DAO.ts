@@ -60,6 +60,27 @@ class ReimbursementDAO {
     }
     throw new Error('Cannot update request');
   }
+
+  async getAllReimbursementRequestsByStatus(status: string): Promise<Reimbursement[]> {
+    const params: DocumentClient.ScanInput = {
+      TableName: 'trms_reimbursements',
+      FilterExpression: '#s = :status',
+      ExpressionAttributeNames: {
+        '#s': 'status',
+      },
+      ExpressionAttributeValues: {
+        ':status': status,
+      },
+    };
+
+    const results = await this.docClient.scan(params).promise();
+    if(results.Items) {
+      if(results.Items?.length > 0) {
+        return results.Items as Reimbursement[];
+      }
+    }
+    return [];
+  }
 }
 
 export default new ReimbursementDAO();

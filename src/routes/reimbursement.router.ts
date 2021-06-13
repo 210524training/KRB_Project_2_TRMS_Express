@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import reimbursementService from '../services/reimbursement/reimbursement.service';
+import ReimbursementService from '../services/reimbursement/reimbursement.service';
 import log from '../utils/log';
 
 const reimbursementRouter = Router();
@@ -10,7 +10,21 @@ const reimbursementRouter = Router();
  */
 reimbursementRouter.get('/', async (req, res) => {
   console.log('This route will retrieve reimbursement requests from the user\'s bin');
-  res.sendStatus(200);
+
+  const { user } = req.session;
+
+  try {
+    if(user) {
+      const didPopulateBin = await ReimbursementService.populateUserBin(user);
+      if(didPopulateBin) {
+        log.debug(didPopulateBin);
+        res.sendStatus(200);
+      }
+    }
+  } catch(err) {
+    log.error(err);
+    res.sendStatus(400);
+  }
 });
 
 /**
@@ -18,7 +32,11 @@ reimbursementRouter.get('/', async (req, res) => {
  * create logged in user's reimburement request
  */
 reimbursementRouter.post('/', async (req, res) => {
-  console.log('This route will create new reimbursement requests');
+  let currentUserRole: string = '';
+
+  if(req.session.user) {
+    currentUserRole = req.session.user.role;
+  }
 
   const {
     employeeName,
@@ -35,7 +53,8 @@ reimbursementRouter.post('/', async (req, res) => {
   } = req.body;
 
   try {
-    const isSubmissionSuccessful = await reimbursementService.constructNewReimbursementRequest(
+    const isSubmissionSuccessful = await ReimbursementService.constructNewReimbursementRequest(
+      currentUserRole,
       employeeName,
       employeeEmail,
       eventStartDate,

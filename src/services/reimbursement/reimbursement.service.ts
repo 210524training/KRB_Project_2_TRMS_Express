@@ -1,5 +1,6 @@
 import ReimbursementDAO from '../../DAO/reimbursement.DAO';
 import Reimbursement, { ReimburseableEvent, ReimbursementStatus } from '../../models/reimbursement';
+import User from '../../models/user';
 
 class ReimbursementService {
   constructor(
@@ -24,6 +25,7 @@ class ReimbursementService {
    * TODO: Dates need to be formatted into so they are more uniformed.
    */
   async constructNewReimbursementRequest(
+    currentUserRole: string,
     employeeName: string,
     employeeEmail: string,
     eventStartDate: Date,
@@ -39,8 +41,20 @@ class ReimbursementService {
     // server generated data for the request
     const submissionDate = new Date();
     const docid = Math.random().toString(36).substring(7);
-    const currentStatus: ReimbursementStatus = 'Awaiting Direct Supervisor';
     const isUrgent = this.isUrgent(submissionDate, eventStartDate);
+
+    let currentStatus: ReimbursementStatus;
+
+    switch (currentUserRole) {
+    case 'Direct Supervisor':
+      currentStatus = 'Awaiting Department Head';
+      break;
+    case 'Department Head':
+      currentStatus = 'Awaiting Benefits Coordinator';
+      break;
+    default:
+      currentStatus = 'Awaiting Direct Supervisor';
+    }
 
     // create new request object
     const request = new Reimbursement(
@@ -80,6 +94,24 @@ class ReimbursementService {
       throw new Error('Grade could not be updated');
     }
     throw new Error('Reimburesment request does not exist');
+  }
+
+  /**
+   * Requests data to populate the user's bin according to the role assigned and status of request
+   */
+
+  async populateUserBin(user: User): Promise<boolean> {
+    const binHasItems = await this.data.getAllReimbursementRequestsByStatus(`Awaiting ${user.role}`);
+
+    if(binHasItems.length === 0) {
+      throw new Error('There are no items in the bin');
+    }
+
+    binHasItems.forEach((item: Reimbursement) => {
+      user.bin.push(item);
+    });
+    console.log(user.bin);
+    return true;
   }
 }
 
