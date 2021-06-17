@@ -1,4 +1,3 @@
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 async function sendLogin() {
   const usernameInput = document.getElementById('usernameInput') as HTMLInputElement;
   const passwordInput = document.getElementById('passwordInput') as HTMLInputElement;
@@ -8,7 +7,7 @@ async function sendLogin() {
     return;
   }
 
-  const response = await fetch('http://localhost:3000/', {
+  const response = await fetch('http://localhost:3000/login', {
     body: JSON.stringify({
       username: usernameInput.value,
       password: passwordInput.value,
@@ -18,10 +17,3 @@ async function sendLogin() {
     },
     method: 'POST',
   });
-
-  const data = await response.json();
-
-  console.log(data);
-
-  sessionStorage.setItem('user', JSON.stringify(data));
-}

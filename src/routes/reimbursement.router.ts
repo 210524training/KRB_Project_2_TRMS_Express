@@ -9,8 +9,6 @@ const reimbursementRouter = Router();
  * retrieve logged in user's bin
  */
 reimbursementRouter.get('/', async (req, res) => {
-  console.log('This route will retrieve reimbursement requests from the user\'s bin');
-
   const { user } = req.session;
 
   try {

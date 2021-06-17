@@ -8,6 +8,7 @@ import dotenv from 'dotenv';
 
 import log from './utils/log';
 import baseRouter from './routes';
+import { IncorrectCredentialsError, UserNotFoundError } from './errors';
 
 dotenv.config({ path: `${__dirname}/.env` });
 
@@ -30,6 +31,33 @@ app.use(expressSession({
 app.use('/', baseRouter);
 
 const { BAD_REQUEST } = StatusCodes;
+
+app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
+  if (err instanceof UserNotFoundError) {
+    log.error(err);
+    res.status(BAD_REQUEST).json({
+      error: err.message,
+    });
+
+    return;
+  }
+
+  next(err);
+});
+
+app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
+  if (err instanceof IncorrectCredentialsError) {
+    log.error(err);
+    res.status(BAD_REQUEST).json({
+      error: err.message,
+    });
+
+    return;
+  }
+
+  next(err);
+});
+
 app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
   // TODO: Refactor later that sends back more than just a 400
   // Because not all requests that fail are the fault of the client

@@ -6,9 +6,9 @@ import User from '../models/user';
 class UserDAO {
   constructor(
     private docClient = dynamo,
-  ) {}
+  ) { }
 
-  async getByUsername(username: string): Promise<User> {
+  async getByUsername(username: string): Promise<User | null> {
     console.log(typeof username, username);
     const params: DocumentClient.GetItemInput = {
 
@@ -27,11 +27,11 @@ class UserDAO {
 
     const data = await this.docClient.get(params).promise();
 
-    if(data) {
+    if (data) {
       log.debug(data);
       return (data.Item) as User;
     }
-    throw new Error('User not found.');
+    return null;
   }
 }
 
