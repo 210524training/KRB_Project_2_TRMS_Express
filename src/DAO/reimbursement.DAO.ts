@@ -38,7 +38,7 @@ class ReimbursementDAO {
     throw new Error('Reimbursement request not found');
   }
 
-  async updateRequestFinalGrade(docid: string, finalgrade: string): Promise<boolean> {
+  async updateRequestFinalGrade(docid: string, finalgrade: string | undefined): Promise<boolean> {
     const params: DocumentClient.UpdateItemInput = {
       TableName: 'trms_reimbursements',
       Key: {

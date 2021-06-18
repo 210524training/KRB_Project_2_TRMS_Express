@@ -9,14 +9,13 @@ class UserDAO {
   ) { }
 
   async getByUsername(username: string): Promise<User | null> {
-    console.log(typeof username, username);
     const params: DocumentClient.GetItemInput = {
 
       TableName: 'trms_users',
       Key: {
         username,
       },
-      ProjectionExpression: '#u, #p, #e, #r',
+      ProjectionExpression: '#u, #p, #e, #r, bin',
       ExpressionAttributeNames: {
         '#u': 'username',
         '#p': 'password',
@@ -27,11 +26,34 @@ class UserDAO {
 
     const data = await this.docClient.get(params).promise();
 
-    if (data) {
+    if(data) {
       log.debug(data);
       return (data.Item) as User;
     }
     return null;
+  }
+
+  async addUser(user: User): Promise<boolean> {
+    const params: DocumentClient.PutItemInput = {
+      TableName: 'trms_users',
+      Item: {
+        ...user,
+      },
+      ConditionExpression: '#u <> :u',
+      ExpressionAttributeNames: {
+        '#u': user.username,
+      },
+      ExpressionAttributeValues: {
+        ':u': user.username,
+      },
+    };
+    try {
+      await this.docClient.put(params).promise();
+      return true;
+    } catch(err) {
+      log.error(err);
+      return false;
+    }
   }
 }
 

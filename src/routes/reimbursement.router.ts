@@ -46,7 +46,6 @@ reimbursementRouter.post('/', async (req, res) => {
     eventCost,
     gradingFormat,
     eventType,
-    justification,
     attachments,
   } = req.body;
 
@@ -62,12 +61,11 @@ reimbursementRouter.post('/', async (req, res) => {
       eventCost,
       gradingFormat,
       eventType,
-      justification,
       attachments,
     );
 
     if(isSubmissionSuccessful) {
-      res.sendStatus(201);
+      res.json(201);
     } else {
       res.sendStatus(400);
     }
@@ -79,11 +77,12 @@ reimbursementRouter.post('/', async (req, res) => {
 
 /**
  * This route will:
- * update logged a user's reimburement request
+ * update logged a user's reimburement request's grade
  */
-reimbursementRouter.put('/', async (req, res) => {
-  console.log('This route will update reimbursment requests');
-  res.sendStatus(202);
+reimbursementRouter.put('/:docid', async (req, res) => {
+  const { docid } = req.params;
+  const { finalgrade } = req.body;
+  res.json(await ReimbursementService.updateFinalGrade(docid, finalgrade));
 });
 
 export default reimbursementRouter;

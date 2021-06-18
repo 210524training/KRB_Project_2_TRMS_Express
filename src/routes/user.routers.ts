@@ -1,5 +1,8 @@
-import { Router } from 'express';
+import express, { Router } from 'express';
+import Reimbursement from '../models/reimbursement';
+import User from '../models/user';
 import reimbursementService from '../services/reimbursement/reimbursement.service';
+import UserService from '../services/user/user.service';
 import log from '../utils/log';
 
 const userRouter = Router();
@@ -24,7 +27,7 @@ userRouter.get('/', async (req, res) => {
  * May want to force user to wait until the end of the course to do so, However,
  * Data is not currently tracking end of course
  */
-userRouter.put('/', async (req, res) => {
+userRouter.put('/', async (req: express.Request<unknown, unknown, Reimbursement, unknown, {}>, res) => {
   const { docid, finalgrade } = req.body;
   try {
     const isUpdated = await reimbursementService.updateFinalGrade(docid, finalgrade);
@@ -35,6 +38,11 @@ userRouter.put('/', async (req, res) => {
     log.error(err);
     res.sendStatus(400);
   }
+});
+
+userRouter.post('/', async (req: express.Request<unknown, unknown, User, unknown, {}>, res) => {
+  const { username, password, email } = req.body;
+  res.json(await UserService.registorUser(username, password, email));
 });
 
 export default userRouter;

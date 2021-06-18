@@ -6,7 +6,7 @@ export default class User {
     public password: string,
     public email: string,
     public role: Role,
-    public bin: Reimbursement[],
+    public bin?: Reimbursement[],
 
   ) { }
 }

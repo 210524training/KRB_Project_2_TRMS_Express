@@ -35,8 +35,7 @@ class ReimbursementService {
     eventCost: number,
     gradingFormat: 'Grade' | 'Presentation',
     eventType: ReimburseableEvent,
-    justification: string,
-    attachments: {} | undefined,
+    attachments: {} | null = null,
   ): Promise<boolean> {
     // server generated data for the request
     const submissionDate = new Date();
@@ -71,7 +70,6 @@ class ReimbursementService {
       undefined,
       undefined,
       eventType,
-      justification,
       attachments,
       currentStatus,
       isUrgent,
@@ -83,7 +81,7 @@ class ReimbursementService {
   /**
    * Allows user to update request's final grade attribute
    */
-  async updateFinalGrade(docid: string, finalgrade: string): Promise<boolean> {
+  async updateFinalGrade(docid: string, finalgrade: string | undefined): Promise<boolean> {
     // Check to verify docid exists and matches provided docid
     const verifyDocId = await this.data.getReimbursementRequestByDocId(docid);
     if(verifyDocId.docid === docid) {
@@ -103,15 +101,15 @@ class ReimbursementService {
   async populateUserBin(user: User): Promise<boolean> {
     const binHasItems = await this.data.getAllReimbursementRequestsByStatus(`Awaiting ${user.role}`);
 
-    if(binHasItems.length === 0) {
-      throw new Error('There are no items in the bin');
+    if(binHasItems.length > 0) {
+      binHasItems.forEach((item: Reimbursement) => {
+        user.bin?.push(item);
+      });
+      console.log(user.bin);
+      return true;
     }
 
-    binHasItems.forEach((item: Reimbursement) => {
-      user.bin.push(item);
-    });
-    console.log(user.bin);
-    return true;
+    throw new Error('There are no items in the bin');
   }
 }
 

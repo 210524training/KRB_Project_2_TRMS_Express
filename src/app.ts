@@ -33,7 +33,7 @@ app.use('/', baseRouter);
 const { BAD_REQUEST } = StatusCodes;
 
 app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
-  if (err instanceof UserNotFoundError) {
+  if(err instanceof UserNotFoundError) {
     log.error(err);
     res.status(BAD_REQUEST).json({
       error: err.message,
@@ -46,7 +46,7 @@ app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
 });
 
 app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
-  if (err instanceof IncorrectCredentialsError) {
+  if(err instanceof IncorrectCredentialsError) {
     log.error(err);
     res.status(BAD_REQUEST).json({
       error: err.message,

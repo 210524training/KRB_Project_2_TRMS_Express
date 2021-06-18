@@ -13,8 +13,7 @@ export default class Reimbursement {
     public finalgrade: string | undefined,
     public finalGradeSatisfactory: boolean | undefined,
     public eventType: ReimburseableEvent,
-    public justification: string,
-    public attachments: {} | undefined,
+    public attachments: {} | null,
     public status: ReimbursementStatus,
     public urgent: boolean,
   ) { }

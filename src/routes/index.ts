@@ -1,19 +1,11 @@
 import express, { Router } from 'express';
-import User from '../models/user';
 import userRouter from './user.routers';
 import reimbursementRouter from './reimbursement.router';
 import UserService from '../services/user/user.service';
+import reimbursementService from '../services/reimbursement/reimbursement.service';
 import log from '../utils/log';
 
 const baseRouter = Router();
-
-/**
- * This route will:
- * send home/sign-in page
- */
-baseRouter.get('/', async (req, res) => {
-  res.sendFile('index.html', { root: 'src/public/views/' });
-});
 
 /**
  * This route will:
@@ -29,9 +21,28 @@ baseRouter.post('/', async (req: express.Request<unknown, unknown, { username: s
   const user = await UserService.verifyCredentials(username, password);
   req.session.isLoggedIn = true;
   req.session.user = user;
+  try {
+    await reimbursementService.populateUserBin(user);
+  } catch(err) {
+    log.debug(err);
+  }
   // res.json(req.session.user);
-  res.json(req.session.user)
+  res.json(req.session.user);
 });
+
+export async function logout(req: express.Request, res: express.Response): Promise<void> {
+  if(req.session.user) {
+    const { username } = req.session.user;
+
+    req.session.destroy(() => {
+      console.log(`${username} logged out`);
+    });
+  }
+
+  res.status(202).send();
+}
+
+baseRouter.post('/logout', logout);
 
 baseRouter.use('/api/v1/:user', userRouter);
 baseRouter.use('/api/v1/:user/reimbursement-requests', reimbursementRouter);
