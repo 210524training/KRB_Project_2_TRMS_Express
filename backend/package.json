@@ -1,5 +1,5 @@
 {
-  "name": "grubdash",
+  "name": "trms-backend",
   "version": "1.0.0",
   "description": "A DoorDash/GrubHub Clone",
   "main": "src/index.ts",
