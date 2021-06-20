@@ -81,6 +81,27 @@ class ReimbursementDAO {
     }
     return [];
   }
+
+  async getAllReimbursementRequestsByUsername(username: string): Promise<Reimbursement[]> {
+    const params: DocumentClient.ScanInput = {
+      TableName: 'trms_reimbursements',
+      FilterExpression: '#e = :user',
+      ExpressionAttributeNames: {
+        '#e': 'employeeName',
+      },
+      ExpressionAttributeValues: {
+        ':user': username,
+      },
+    };
+
+    const results = await this.docClient.scan(params).promise();
+    if(results.Items) {
+      if(results.Items?.length > 0) {
+        return results.Items as Reimbursement[];
+      }
+    }
+    return [];
+  }
 }
 
 export default new ReimbursementDAO();

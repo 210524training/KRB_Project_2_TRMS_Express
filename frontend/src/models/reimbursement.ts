@@ -2,17 +2,18 @@ export default interface Reimbursement {
     docid: string;
     employeeName: string;
     employeeEmail: string;
-    submissionDate: string;
+    submissionDate: Date;
     eventStartDate: Date;
     eventStartTime: string;
     eventLocation: string;
     eventDescription: string;
     eventCost: number;
     gradingFormat: 'Grade' | 'Presentation';
+    passingGrade: string;
     finalgrade: string | undefined;
     finalGradeSatisfactory: boolean | undefined;
     eventType: ReimburseableEvent;
-    attachments: {} | null;
+    attachments: File | null;
     status: ReimbursementStatus;
     urgent: boolean;
 }

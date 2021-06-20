@@ -16,7 +16,7 @@ reimbursementRouter.get('/', async (req, res) => {
       const didPopulateBin = await ReimbursementService.populateUserBin(user);
       if(didPopulateBin) {
         log.debug(didPopulateBin);
-        res.sendStatus(200);
+        res.send(didPopulateBin);
       }
     }
   } catch(err) {
@@ -45,6 +45,7 @@ reimbursementRouter.post('/', async (req, res) => {
     eventDescription,
     eventCost,
     gradingFormat,
+    passingGrade,
     eventType,
     attachments,
   } = req.body;
@@ -60,6 +61,7 @@ reimbursementRouter.post('/', async (req, res) => {
       eventDescription,
       eventCost,
       gradingFormat,
+      passingGrade,
       eventType,
       attachments,
     );

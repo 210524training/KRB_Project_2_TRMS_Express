@@ -34,8 +34,9 @@ class ReimbursementService {
     eventDescription: string,
     eventCost: number,
     gradingFormat: 'Grade' | 'Presentation',
+    passingGrade: string,
     eventType: ReimburseableEvent,
-    attachments: {} | null = null,
+    attachments: File| null,
   ): Promise<boolean> {
     // server generated data for the request
     const submissionDate = new Date();
@@ -67,6 +68,7 @@ class ReimbursementService {
       eventDescription,
       eventCost,
       gradingFormat,
+      passingGrade,
       undefined,
       undefined,
       eventType,
@@ -98,18 +100,8 @@ class ReimbursementService {
    * Requests data to populate the user's bin according to the role assigned and status of request
    */
 
-  async populateUserBin(user: User): Promise<boolean> {
-    const binHasItems = await this.data.getAllReimbursementRequestsByStatus(`Awaiting ${user.role}`);
-
-    if(binHasItems.length > 0) {
-      binHasItems.forEach((item: Reimbursement) => {
-        user.bin?.push(item);
-      });
-      console.log(user.bin);
-      return true;
-    }
-
-    throw new Error('There are no items in the bin');
+  async populateUserBin(user: User): Promise<Reimbursement[]> {
+    return this.data.getAllReimbursementRequestsByStatus(`Awaiting ${user.role}`);
   }
 }
 

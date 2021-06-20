@@ -1,10 +1,13 @@
 import userDAO from '../../DAO/user.DAO';
 import User from '../../models/user';
 import { IncorrectCredentialsError, UserNotAddedError, UserNotFoundError } from '../../errors';
+import Reimbursement from '../../models/reimbursement';
+import reimbursementDAO from '../../DAO/reimbursement.DAO';
 
 class UserService {
   constructor(
     public data = userDAO,
+    public Rdata = reimbursementDAO,
   ) { }
 
   async verifyCredentials(username: string, password: string): Promise<User> {
@@ -28,6 +31,11 @@ class UserService {
       throw new UserNotAddedError();
     }
     return user;
+  }
+
+  async getUserRequests(username: string): Promise<Reimbursement[]> {
+    const requests = await this.Rdata.getAllReimbursementRequestsByUsername(username);
+    return requests as Reimbursement[];
   }
 }
 

@@ -5,7 +5,7 @@ export default interface User {
     password: string;
     email: string;
     role: Role;
-    bin?: Reimbursement[];
+    bin: Reimbursement[];
 }
 
 export type Role = 'Employee' | 'Direct Supervisor' | 'Departement Head' | 'Benefits Coordinator';

@@ -1,19 +1,22 @@
+import { v4 as uuidv4 } from 'uuid';
+
 export default class Reimbursement {
   constructor(
-    public docid: string,
+    public docid: string = uuidv4(),
     public employeeName: string,
     public employeeEmail: string,
-    public submissionDate: string,
+    public submissionDate: Date | string,
     public eventStartDate: Date,
     public eventStartTime: string,
     public eventLocation: string,
     public eventDescription: string,
     public eventCost: number,
     public gradingFormat: 'Grade' | 'Presentation',
+    public passingGrade: string,
     public finalgrade: string | undefined,
     public finalGradeSatisfactory: boolean | undefined,
     public eventType: ReimburseableEvent,
-    public attachments: {} | null,
+    public attachments: File | null,
     public status: ReimbursementStatus,
     public urgent: boolean,
   ) { }

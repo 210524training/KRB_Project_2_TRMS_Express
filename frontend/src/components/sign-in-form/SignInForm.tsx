@@ -1,17 +1,23 @@
 import React, { ChangeEvent, Dispatch, FormEvent, SetStateAction, useState } from "react";
 import { Button, Form } from "react-bootstrap";
+import { useHistory } from "react-router-dom";
+import User from "../../models/user";
 import { sendLogin } from "../../remote/trms.api";
 import RegisterButton from "../register-button/RegistorButton";
 
 type Props = {
+  currentUser: User | undefined;
   toggleRegister: Dispatch<SetStateAction<boolean>>
   showRegister: boolean
+  setCurrentUser: Dispatch<SetStateAction<undefined | User>>
 }
 
-const SignInForm: React.FC<Props> = ({ toggleRegister, showRegister }) => {
+const SignInForm: React.FC<Props> = ({ currentUser, toggleRegister, showRegister, setCurrentUser }) => {
 
   const [username, setUsername] = useState<string>('');
   const [password, setPassword] = useState<string>('');
+
+  const history = useHistory();
 
   const handleUsernameChange = (e: ChangeEvent<HTMLInputElement>) => {
     setUsername(e.target.value);
@@ -22,10 +28,10 @@ const SignInForm: React.FC<Props> = ({ toggleRegister, showRegister }) => {
   };
 
   const handleFormSubmit = async (e: FormEvent<HTMLFormElement>) => {
-    console.log(e)
     e.preventDefault();
     const user = await sendLogin(username, password);
-    console.log(user)
+    setCurrentUser(user);
+    history.push('/workstation')
   }
   
   return (

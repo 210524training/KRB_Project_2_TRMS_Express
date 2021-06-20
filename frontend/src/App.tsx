@@ -1,16 +1,21 @@
-import React from 'react';
+import React, { useState } from 'react';
 import './App.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
-import LoginPage from './pages/login-page/LoginPage';
-import Footer from './components/Footer/Footer';
-import Header from './components/Header/Header';
+import Footer from './components/footer/Footer';
+import Header from './components/header/Header';
+import User from './models/user';
+import AppRoutes from './routes/AppRoutes';
+import { BrowserRouter as Router } from 'react-router-dom';
 
 const App: React.FC = () => {
+  let [currentUser, setCurrentUser] = useState<User | undefined>()
   return (
     <div className="App">
-      <Header />
-      <LoginPage />
-      <Footer />
+      <Router>
+        <Header />
+        <AppRoutes currentUser={currentUser} setCurrentUser={setCurrentUser} />
+        <Footer />
+      </Router>
     </div>
   );
 }
