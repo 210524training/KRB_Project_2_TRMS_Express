@@ -15,6 +15,10 @@ const UserPage: React.FC<Props> = ({ currentUser, setCurrentUser }) => {
 
   const history = useHistory();
 
+  if(!currentUser) {
+    history.push('/');
+  }
+
   const handleClick = (): void => {
     setCurrentUser(undefined);
     history.push('/')

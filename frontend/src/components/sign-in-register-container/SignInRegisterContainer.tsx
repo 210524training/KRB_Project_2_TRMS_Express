@@ -14,7 +14,7 @@ const SignInRegisterContainer: React.FC<Props>  = ({ setCurrentUser, currentUser
 
   return (
     <>
-      <div className="container col-md-4">
+      <div className="container col-md-4 mt-4">
         {
         showRegister ? 
         <RegisterForm showRegister ={showRegister} toggleRegister={toggleRegister} /> : 
