@@ -26,7 +26,7 @@ class UserService {
     password: string,
     email: string,
   ): Promise<boolean> {
-    const user = await this.data.addUser(new User(username, password, email, 'Employee', []));
+    const user = await this.data.addUser(new User(username, password, email, 'Employee'));
     if(!user) {
       throw new UserNotAddedError();
     }

@@ -15,7 +15,7 @@ class UserDAO {
       Key: {
         username,
       },
-      ProjectionExpression: '#u, #p, #e, #r, bin',
+      ProjectionExpression: '#u, #p, #e, #r, availableAmount',
       ExpressionAttributeNames: {
         '#u': 'username',
         '#p': 'password',

@@ -7,7 +7,7 @@ export const sendLogin = async (username: string, password: string): Promise<Use
     username,
     password,
   });
-
+  
   return user as User;
 }
 

@@ -16,7 +16,11 @@ userRouter.get('/', async (req, res) => {
     throw new Error('Not Authorized: You must be logged in.');
   }
   const { user } = req.session;
-  res.json(await UserService.getUserRequests(user.username));
+  try {
+    res.json(await UserService.getUserRequests(user.username));
+  } catch(err) {
+    res.send(err);
+  }
 });
 
 /**

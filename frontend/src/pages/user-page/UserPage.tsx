@@ -2,16 +2,19 @@ import React, { Dispatch, SetStateAction } from 'react';
 import { Button, Navbar, Tab, Tabs } from 'react-bootstrap';
 import { useHistory } from 'react-router-dom';
 import MyRequestsTable from '../../components/my-requests-table/MyRequestsTable';
+import Profile from '../../components/profile/Profile';
 import ReimbursementForm from '../../components/reimbursement-form/ReimbursementForm';
 import RequestsTable from '../../components/requests-table/RequestsTable';
+import Reimbursement from '../../models/reimbursement';
 import User from '../../models/user';
 
 type Props = {
   currentUser: User | undefined;
   setCurrentUser: Dispatch<SetStateAction<undefined | User>>;
+  setRequest: Dispatch<SetStateAction<undefined | Reimbursement>>;
 }
 
-const UserPage: React.FC<Props> = ({ currentUser, setCurrentUser }) => {
+const UserPage: React.FC<Props> = ({ currentUser, setCurrentUser, setRequest }) => {
 
   const history = useHistory();
 
@@ -39,7 +42,7 @@ const UserPage: React.FC<Props> = ({ currentUser, setCurrentUser }) => {
       </Navbar.Collapse>
     </Navbar>
     <div className="m-4">
-      <Tabs defaultActiveKey="profile" id="uncontrolled-tab-example">
+      <Tabs defaultActiveKey="profile" id="tabs">
         <Tab eventKey="create" title="Create New Reimbursement Request">
           <ReimbursementForm currentUser={currentUser} />
         </Tab>
@@ -47,7 +50,10 @@ const UserPage: React.FC<Props> = ({ currentUser, setCurrentUser }) => {
           <MyRequestsTable currentUser={currentUser} />
         </Tab>
         <Tab eventKey="inbox" title="Reimbursement Inbox">
-          <RequestsTable currentUser={currentUser} />
+          <RequestsTable currentUser={currentUser} setRequest={setRequest} />
+        </Tab>
+        <Tab eventKey="myprofile" title="My Profile">
+          <Profile currentUser={currentUser} />
         </Tab>
       </Tabs>
     </div>
