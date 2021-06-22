@@ -1,6 +1,7 @@
 import { DocumentClient } from 'aws-sdk/clients/dynamodb';
 import dynamo from '../dynamo/dynamo';
-import Reimbursement from '../models/reimbursement';
+import Reimbursement, { ReimbursementStatus } from '../models/reimbursement';
+import User from '../models/user';
 import log from '../utils/log';
 
 class ReimbursementDAO {
@@ -82,7 +83,8 @@ class ReimbursementDAO {
     return [];
   }
 
-  async getAllReimbursementRequestsByUsername(username: string): Promise<Reimbursement[]> {
+  async getAllReimbursementRequestsByUsername(username: User): Promise<Reimbursement[]> {
+    console.log(username.username);
     const params: DocumentClient.ScanInput = {
       TableName: 'trms_reimbursements',
       FilterExpression: '#e = :user',
@@ -90,17 +92,48 @@ class ReimbursementDAO {
         '#e': 'employeeName',
       },
       ExpressionAttributeValues: {
-        ':user': username,
+        ':user': username.username,
       },
     };
 
     const results = await this.docClient.scan(params).promise();
+    console.log('********************************************', results.Items);
     if(results.Items) {
       if(results.Items?.length > 0) {
         return results.Items as Reimbursement[];
       }
     }
     return [];
+  }
+
+  async updateReimbursementRequestStatus(
+    docid: string,
+    status: ReimbursementStatus,
+    comments: string,
+  ): Promise<boolean> {
+    console.log('************************************************', docid, status, comments);
+    const params: DocumentClient.UpdateItemInput = {
+      TableName: 'trms_reimbursements',
+      Key: {
+        docid,
+      },
+      UpdateExpression: 'SET #s = :v, #c = :c',
+      ExpressionAttributeNames: {
+        '#s': 'status',
+        '#c': 'comments',
+      },
+      ExpressionAttributeValues: {
+        ':v': status,
+        ':c': comments,
+      },
+      ReturnValues: 'UPDATED_NEW',
+    };
+
+    const isUpdated = await this.docClient.update(params).promise();
+    if(isUpdated) {
+      return true;
+    }
+    throw new Error('Cannot update request');
   }
 }
 

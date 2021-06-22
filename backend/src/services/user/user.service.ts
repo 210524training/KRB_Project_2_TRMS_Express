@@ -33,7 +33,7 @@ class UserService {
     return user;
   }
 
-  async getUserRequests(username: string): Promise<Reimbursement[]> {
+  async getUserRequests(username: User): Promise<Reimbursement[]> {
     const requests = await this.Rdata.getAllReimbursementRequestsByUsername(username);
     return requests as Reimbursement[];
   }

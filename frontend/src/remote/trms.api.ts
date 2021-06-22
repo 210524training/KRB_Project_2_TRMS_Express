@@ -1,4 +1,4 @@
-import Reimbursement from "../models/reimbursement";
+import Reimbursement, { ReimbursementStatus } from "../models/reimbursement";
 import User from "../models/user";
 import trmsClient from "./trms.client";
 
@@ -9,6 +9,14 @@ export const sendLogin = async (username: string, password: string): Promise<Use
   });
   
   return user as User;
+}
+
+export const sendStatusUpdate= async (docid: string | undefined, status: ReimbursementStatus | undefined, comments: string | undefined): Promise<void> => {
+  await trmsClient.put<any>(`/api/v1/${docid}/reimbursement-requests/${docid}/status`, {
+    docid,
+    status,
+    comments,
+  });
 }
 
 export const sendForm = async (

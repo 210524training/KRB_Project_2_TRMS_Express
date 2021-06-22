@@ -17,7 +17,7 @@ userRouter.get('/', async (req, res) => {
   }
   const { user } = req.session;
   try {
-    res.json(await UserService.getUserRequests(user.username));
+    res.json(await UserService.getUserRequests(user));
   } catch(err) {
     res.send(err);
   }

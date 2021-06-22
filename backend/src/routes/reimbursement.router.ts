@@ -48,6 +48,7 @@ reimbursementRouter.post('/', async (req, res) => {
     passingGrade,
     eventType,
     attachments,
+    comments,
   } = req.body;
 
   try {
@@ -64,6 +65,7 @@ reimbursementRouter.post('/', async (req, res) => {
       passingGrade,
       eventType,
       attachments,
+      comments,
     );
 
     if(isSubmissionSuccessful) {
@@ -82,9 +84,17 @@ reimbursementRouter.post('/', async (req, res) => {
  * update logged a user's reimburement request's grade
  */
 reimbursementRouter.put('/:docid', async (req, res) => {
-  const { docid } = req.params;
+  const { docid } = req.body;
   const { finalgrade } = req.body;
   res.json(await ReimbursementService.updateFinalGrade(docid, finalgrade));
+});
+
+reimbursementRouter.put('/:docid/status', async (req, res) => {
+  const { docid } = req.body;
+  const { status } = req.body;
+  const { comments } = req.body;
+  console.log(docid, status, comments);
+  res.json(await ReimbursementService.updateStatus(docid, status, comments));
 });
 
 export default reimbursementRouter;

@@ -35,11 +35,6 @@ const RequestsTable: React.FC<Props> = ({ currentUser, setRequest }) => {
     <tr key={index} onClick={() => handleClick(item)}>
       <td>{(item.urgent ? 'Yes' : '')}</td>
       <td>{item.submissionDate}</td>
-      <td>{item.status}</td>
-      <td>{item.employeeName}</td>
-      <td>{(item.urgent ? 'Yes' : '')}</td>
-      <td>{item.submissionDate}</td>
-      <td>{item.status}</td>
       <td>{item.employeeName}</td>
       <td>{item.employeeEmail}</td>
       <td>{item.eventType}</td>
@@ -49,9 +44,7 @@ const RequestsTable: React.FC<Props> = ({ currentUser, setRequest }) => {
       <td>{item.eventStartDate}</td>
       <td>{item.eventStartTime}</td>
       <td>{item.gradingFormat}</td>
-      <td>{item.finalgrade}</td>
-      <td>{item.finalGradeSatisfactory}</td>
-      <td>{item.attachments}</td>
+      <td>{item.comments}</td>
     </tr>
   ))
 
@@ -61,19 +54,16 @@ const RequestsTable: React.FC<Props> = ({ currentUser, setRequest }) => {
         <tr>
           <th>Urgent</th>
           <th>Submitted</th>
-          <th>Status</th>
           <th>Username</th>
           <th>Email</th>
           <th>Event</th>
           <th>Description</th>
           <th>Location</th>
           <th>Cost</th>
-          <th>Start</th>
-          <th>Time</th>
-          <th>Format</th>
-          <th>Final</th>
-          <th>Satisfactory</th>
-          <th>Attached</th>
+          <th>Start Date</th>
+          <th>Start Time</th>
+          <th>Graded By</th>
+          <th>Comments</th>
         </tr>
       </thead>
       <tbody>

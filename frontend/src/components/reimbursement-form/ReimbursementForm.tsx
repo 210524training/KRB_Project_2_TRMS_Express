@@ -1,5 +1,6 @@
 import React, { ChangeEvent, FormEvent, useState } from "react";
 import { Form, Button, Col } from "react-bootstrap";
+import { useHistory } from "react-router-dom";
 import User from "../../models/user";
 import { sendForm } from "../../remote/trms.api";
 
@@ -8,6 +9,8 @@ type Props = {
 }
 
 const Register: React.FC<Props> = ({ currentUser }) => {
+
+  const history = useHistory();
   
   const [employeeName, setEmployeeName] = useState<string>('');
   const [employeeEmail, setemployeeEmail] = useState<string>('');
@@ -83,6 +86,7 @@ const Register: React.FC<Props> = ({ currentUser }) => {
       eventType,
       attachments,
     )
+    history.push('/workstation')
   }
   
   return (

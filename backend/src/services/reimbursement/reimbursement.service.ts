@@ -37,6 +37,7 @@ class ReimbursementService {
     passingGrade: string,
     eventType: ReimburseableEvent,
     attachments: File| null,
+    comments: string,
   ): Promise<boolean> {
     // server generated data for the request
     const submissionDate = new Date();
@@ -75,6 +76,7 @@ class ReimbursementService {
       attachments,
       currentStatus,
       isUrgent,
+      comments,
     );
     const isSentToDynamo = await this.data.createNewReimbursementRequest(request);
     return isSentToDynamo;
@@ -102,6 +104,51 @@ class ReimbursementService {
 
   async populateUserBin(user: User): Promise<Reimbursement[]> {
     return this.data.getAllReimbursementRequestsByStatus(`Awaiting ${user.role}`);
+  }
+
+  /**
+   * This function will update the status of the request
+   */
+  async updateStatus(
+    docid: string,
+    status: ReimbursementStatus,
+    comments: string,
+  ): Promise<boolean> {
+    let newStatus: ReimbursementStatus;
+
+    switch (status) {
+    case 'Direct Supervisor Approval':
+      newStatus = 'Awaiting Department Head';
+      break;
+    case 'Department Head Approval':
+      newStatus = 'Awaiting Benefits Coordinator';
+      break;
+    case 'Benefits Coordinator Approval':
+      newStatus = 'Pending Reimbursement';
+      break;
+    case 'Returned to Employee':
+      newStatus = 'Awaiting Employee';
+      break;
+    case 'Returned to Department Head':
+      newStatus = 'Awaiting Department Head';
+      break;
+    case 'Returned to Direct Supervisor':
+      newStatus = 'Awaiting Direct Supervisor';
+      break;
+    case 'Reimbursement Approved':
+      newStatus = status;
+      break;
+    case 'Reimbursement Rejected':
+      newStatus = status;
+      break;
+    default:
+      throw new Error('Invalid Status Assigned');
+    }
+    const isUpdated = await this.data.updateReimbursementRequestStatus(docid, newStatus, comments);
+    if(!isUpdated) {
+      throw new Error('Could not be updated');
+    }
+    return true;
   }
 }
 
