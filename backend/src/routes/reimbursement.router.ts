@@ -93,8 +93,11 @@ reimbursementRouter.put('/:docid/status', async (req, res) => {
   const { docid } = req.body;
   const { status } = req.body;
   const { comments } = req.body;
-  console.log(docid, status, comments);
   res.json(await ReimbursementService.updateStatus(docid, status, comments));
+});
+
+reimbursementRouter.get('/pending', async (req, res) => {
+  res.json(await ReimbursementService.getPendingReimbursements());
 });
 
 export default reimbursementRouter;

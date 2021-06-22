@@ -1,7 +1,7 @@
 {
   "name": "trms-backend",
   "version": "1.0.0",
-  "description": "A DoorDash/GrubHub Clone",
+  "description": "TRMS express backend",
   "main": "src/index.ts",
   "scripts": {
     "test": "jest",
@@ -16,7 +16,7 @@
     "teardown": "ts-node src/setup/deleteTable.ts",
     "populate": "ts-node src/setup/populateData.ts"
   },
-  "author": "IkenoXamos",
+  "author": "lucci-k",
   "license": "ISC",
   "devDependencies": {
     "@types/cors": "^2.8.10",

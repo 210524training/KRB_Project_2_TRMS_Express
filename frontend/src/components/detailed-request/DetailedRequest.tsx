@@ -1,5 +1,6 @@
 import React, { ChangeEvent, useState } from 'react';
 import { Button, Col, Form, Table } from 'react-bootstrap';
+import { useHistory } from 'react-router-dom';
 import Reimbursement, { ReimbursementStatus } from '../../models/reimbursement';
 import User from '../../models/user';
 import { sendStatusUpdate } from '../../remote/trms.api';
@@ -11,11 +12,13 @@ type Props = {
 
 type ReRoute = 'Send to Employee' | 'Send to Direct Supervisor' | 'Send to Department Head' | 'Send to Benefits Coordinator'
 
-const DetailedRequest: React.FC<Props> = (request, currentUser) => {
+const DetailedRequest: React.FC<Props> = ({request, currentUser}) => {
 
-  
   const [showReroute, setShowReroute] = useState<boolean>(false);
   const [returnMessage, setReturnMessage] = useState<string>('');
+  const [grade, setGrade] = useState<string>('');
+
+  const history = useHistory();
 
   const populateTable = (request: Reimbursement | undefined) => {
     if(!request) {
@@ -115,11 +118,14 @@ const DetailedRequest: React.FC<Props> = (request, currentUser) => {
     )
   }
 
-  const handleOnApprove = (docid: string | undefined, status: ReimbursementStatus | undefined) => {
+  const handleOnApproveOrReject = (docid: string | undefined, status: ReimbursementStatus | undefined | string) => {
 
     let newStatus: ReimbursementStatus;
 
     switch(status) {
+      case 'Reject':
+        newStatus = 'Reimbursement Rejected';
+        break;
       case 'Awaiting Employee':
         newStatus = 'Awaiting Direct Supervisor';
         break;
@@ -140,11 +146,11 @@ const DetailedRequest: React.FC<Props> = (request, currentUser) => {
     }
     // send up the chain
     sendStatusUpdate(docid, newStatus, returnMessage);
-
+    history.goBack()
   }
 
+
   const handleOnReturn = (docid: string | undefined, sendTo: ReRoute | undefined, comments: string) => {
-    console.log(comments)
     
     let newStatus: ReimbursementStatus;
 
@@ -166,6 +172,7 @@ const DetailedRequest: React.FC<Props> = (request, currentUser) => {
     }
     // send up the chain
     sendStatusUpdate(docid, newStatus, comments);
+    history.goBack()
   }
 
   const handleReturnMessageChange = (e: ChangeEvent<HTMLInputElement>) => {
@@ -173,32 +180,93 @@ const DetailedRequest: React.FC<Props> = (request, currentUser) => {
     setReturnMessage(message);
   }
 
+  const handleUpdateGradeChange = (e: ChangeEvent<HTMLInputElement>) => {
+    const gradeUpdate = e.target.value;
+    setGrade(gradeUpdate);
+  }
+
+  const handleUpdateGrade = (grade: string, request: Reimbursement | undefined) => {
+    // call axios
+    history.goBack()
+  }
+
+  const goBack = () => {
+    history.goBack()
+  }
 
   return (
     <>
+    <div className="mt-4 container-sm">
+    <Button className="mt-4 container-sm" onClick={() => goBack()}>Go Back</Button>
+    </div>
+    
       <div className="mt-4 container-sm">
         <Table hover size="sm">
           <tbody>
-            {populateTable(request.request)}
+            {populateTable(request)}
           </tbody>
         </Table>
       </div>
 
-      <div className="mt-2 container">
-        <Button variant="dark" 
-        size="lg" 
-        onClick={() => handleOnApprove(request.request?.docid, request.request?.status
-        )}>
-          Approve
-        </Button>{' '}
+        {
+          currentUser?.username === request?.employeeName ?
+          (<>
+            <div className="mt-2 container">
+                <Form.Group controlId="username">
+                  <Form.Control type="text" placeholder="Enter Final Grade" onChange={handleUpdateGradeChange} />
+                  <Button 
+                    className="mt-2"
+                    variant="dark" 
+                    size="lg" 
+                    onClick={() => handleUpdateGrade(grade, request
+                    )}>
+                    Update Final Grade
+                  </Button>{' '}
+                </Form.Group>
+            </div>
+          </> )
 
-        <Button 
-        variant="danger" 
-        size="lg"
-        onClick={() => setShowReroute(true)}>
-          Return
-        </Button>{' '}
-      </div>
+          :
+          
+          (<>
+            <div className="mt-2 container">
+              <Button variant="dark" 
+                size="lg" 
+                onClick={() => handleOnApproveOrReject(request?.docid, request?.status
+                )}>
+                Approve
+              </Button>{' '}
+            
+              <Button 
+                variant="danger" 
+                size="lg"
+                onClick={() => setShowReroute(true)}>
+                Return
+              </Button>{' '}
+            </div>
+            
+            </>)
+
+          
+        }
+        {
+          (currentUser?.role === 'Benefits Coordinator') ? 
+          (<>
+          <div className="mt-2 container">
+            <Button variant="danger" 
+              size="lg" 
+              onClick={() => handleOnApproveOrReject(request?.docid, 'Reject'
+              )}>
+                Reject
+            </Button>{' '}
+          </div>
+          </> )
+
+          : 
+          
+          <></>
+        }
+
       {
       showReroute ? 
       <div className="mt-4 container">
@@ -215,7 +283,7 @@ const DetailedRequest: React.FC<Props> = (request, currentUser) => {
           <Button 
             className="mb-2" 
             variant="dark" 
-            onClick={() => handleOnReturn(request.request?.docid, 'Send to Employee', returnMessage)}>
+            onClick={() => handleOnReturn(request?.docid, 'Send to Employee', returnMessage)}>
             Employee
           </Button> {' '}
         </div>
@@ -224,7 +292,7 @@ const DetailedRequest: React.FC<Props> = (request, currentUser) => {
           <Button 
             className="mb-2" 
             variant="dark" 
-            onClick={() => handleOnReturn(request.request?.docid, 'Send to Direct Supervisor', returnMessage)}>
+            onClick={() => handleOnReturn(request?.docid, 'Send to Direct Supervisor', returnMessage)}>
             Direct Supervisor
           </Button> {' '}
         </div>
@@ -233,7 +301,7 @@ const DetailedRequest: React.FC<Props> = (request, currentUser) => {
           <Button 
             className="mb-2" 
             variant="dark" 
-            onClick={() => handleOnReturn(request.request?.docid, 'Send to Department Head', returnMessage)}>
+            onClick={() => handleOnReturn(request?.docid, 'Send to Department Head', returnMessage)}>
             Department Head
           </Button> {' '}
         </div>
@@ -242,7 +310,7 @@ const DetailedRequest: React.FC<Props> = (request, currentUser) => {
           <Button 
             className="mb-2" 
             variant="dark" 
-            onClick={() => handleOnReturn(request.request?.docid, 'Send to Benefits Coordinator', returnMessage)}>
+            onClick={() => handleOnReturn(request?.docid, 'Send to Benefits Coordinator', returnMessage)}>
             Benefits Coordinator
           </Button> {' '}
         </div>

@@ -141,6 +141,9 @@ class ReimbursementService {
     case 'Reimbursement Rejected':
       newStatus = status;
       break;
+    case 'Pending Reimbursement':
+      newStatus = status;
+      break;
     default:
       throw new Error('Invalid Status Assigned');
     }
@@ -149,6 +152,14 @@ class ReimbursementService {
       throw new Error('Could not be updated');
     }
     return true;
+  }
+
+  async getPendingReimbursements(): Promise<Reimbursement[]> {
+    const data = await this.data.getALLReimbursementRequestPendingReimbursement();
+    if(data.length === 0) {
+      return [];
+    }
+    return data;
   }
 }
 

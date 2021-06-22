@@ -61,3 +61,9 @@ export const getUserOwnedRequests = async (user: User): Promise<Reimbursement[]>
 
   return request as Reimbursement[];
 }
+
+export const getRequestsPendingPayment = async (): Promise<Reimbursement[]> => {
+  const {data: requests} = await trmsClient.get<Reimbursement[]>('/api/v1/:user/reimbursement-requests/pending')
+
+  return requests as Reimbursement[];
+}

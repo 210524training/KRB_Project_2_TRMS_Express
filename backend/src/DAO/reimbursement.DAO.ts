@@ -84,7 +84,6 @@ class ReimbursementDAO {
   }
 
   async getAllReimbursementRequestsByUsername(username: User): Promise<Reimbursement[]> {
-    console.log(username.username);
     const params: DocumentClient.ScanInput = {
       TableName: 'trms_reimbursements',
       FilterExpression: '#e = :user',
@@ -97,7 +96,27 @@ class ReimbursementDAO {
     };
 
     const results = await this.docClient.scan(params).promise();
-    console.log('********************************************', results.Items);
+    if(results.Items) {
+      if(results.Items?.length > 0) {
+        return results.Items as Reimbursement[];
+      }
+    }
+    return [];
+  }
+
+  async getALLReimbursementRequestPendingReimbursement(): Promise<Reimbursement[]> {
+    const params: DocumentClient.ScanInput = {
+      TableName: 'trms_reimbursements',
+      FilterExpression: '#s = :s',
+      ExpressionAttributeNames: {
+        '#s': 'status',
+      },
+      ExpressionAttributeValues: {
+        ':s': 'Awaiting Benefits Coordinator',
+      },
+    };
+
+    const results = await this.docClient.scan(params).promise();
     if(results.Items) {
       if(results.Items?.length > 0) {
         return results.Items as Reimbursement[];
@@ -111,7 +130,6 @@ class ReimbursementDAO {
     status: ReimbursementStatus,
     comments: string,
   ): Promise<boolean> {
-    console.log('************************************************', docid, status, comments);
     const params: DocumentClient.UpdateItemInput = {
       TableName: 'trms_reimbursements',
       Key: {

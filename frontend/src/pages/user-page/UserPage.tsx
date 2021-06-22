@@ -1,6 +1,6 @@
 import React, { Dispatch, SetStateAction } from 'react';
 import { Button, Navbar, Tab, Tabs } from 'react-bootstrap';
-import { useHistory } from 'react-router-dom';
+import { Switch, useHistory } from 'react-router-dom';
 import MyRequestsTable from '../../components/my-requests-table/MyRequestsTable';
 import Profile from '../../components/profile/Profile';
 import ReimbursementForm from '../../components/reimbursement-form/ReimbursementForm';
@@ -42,20 +42,23 @@ const UserPage: React.FC<Props> = ({ currentUser, setCurrentUser, setRequest }) 
       </Navbar.Collapse>
     </Navbar>
     <div className="m-4">
-      <Tabs defaultActiveKey="profile" id="tabs">
-        <Tab eventKey="create" title="Create New Reimbursement Request">
-          <ReimbursementForm currentUser={currentUser} />
-        </Tab>
-        <Tab eventKey="myrequests" title="My Reimbursement Requests">
-          <MyRequestsTable currentUser={currentUser} />
-        </Tab>
-        <Tab eventKey="inbox" title="Reimbursement Inbox">
-          <RequestsTable currentUser={currentUser} setRequest={setRequest} />
-        </Tab>
-        <Tab eventKey="myprofile" title="My Profile">
-          <Profile currentUser={currentUser} />
-        </Tab>
-      </Tabs>
+      <Switch>
+        <Tabs defaultActiveKey="profile" id="tabs">
+          <Tab eventKey="create" title="Create New Reimbursement Request">
+            <ReimbursementForm currentUser={currentUser} />
+          </Tab>
+          <Tab eventKey="myrequests" title="My Reimbursement Requests">
+            <MyRequestsTable currentUser={currentUser} setRequest={setRequest} />
+          </Tab>
+          <Tab eventKey="inbox" title="Reimbursement Inbox">
+            <RequestsTable currentUser={currentUser} setRequest={setRequest} />
+          </Tab>
+          <Tab eventKey="myprofile" title="My Profile">
+            <Profile currentUser={currentUser} />
+          </Tab>
+        </Tabs>
+      </Switch>
+      
     </div>
   </>
   )

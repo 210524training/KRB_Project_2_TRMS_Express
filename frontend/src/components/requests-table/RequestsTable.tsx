@@ -27,7 +27,6 @@ const RequestsTable: React.FC<Props> = ({ currentUser, setRequest }) => {
 
   const handleClick = (request: any): void => {
     setRequest(request);
-    console.log(request)
     history.push(`/workstation/${request.docid}`)
   }
   

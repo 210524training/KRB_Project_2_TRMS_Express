@@ -39,7 +39,7 @@ const SignInForm: React.FC<Props> = ({ currentUser, toggleRegister, showRegister
     <div>
       <h2>Sign In</h2>
       <Form onSubmit={handleFormSubmit} >
-        <Form.Group controlId="formBasicEmail">
+        <Form.Group controlId="username">
           <Form.Label>Username</Form.Label>
           <Form.Control type="text" placeholder="My Name" onChange={handleUsernameChange} />
         </Form.Group>
