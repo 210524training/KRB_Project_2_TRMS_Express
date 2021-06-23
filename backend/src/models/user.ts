@@ -5,6 +5,7 @@ export default class User {
     public email: string,
     public role: Role,
     public availableAmount: number = 1000,
+    public pendingAmount: number = 0,
 
   ) { }
 }

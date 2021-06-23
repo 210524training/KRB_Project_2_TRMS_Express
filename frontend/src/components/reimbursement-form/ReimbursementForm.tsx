@@ -1,7 +1,9 @@
-import React, { ChangeEvent, FormEvent, useState } from "react";
+import React, { ChangeEvent, FormEvent, useEffect, useState } from "react";
 import { Form, Button, Col } from "react-bootstrap";
+import { ReimburseableEvent } from "../../models/reimbursement";
 import User from "../../models/user";
 import { sendForm } from "../../remote/trms.api";
+import AlertDismiss from "../alerts/AlertDismiss";
 
 type Props = {
   currentUser: User | undefined;
@@ -20,6 +22,13 @@ const Register: React.FC<Props> = ({ currentUser }) => {
   const [passingGrade, setpassingGrade] = useState<string>('');
   const [eventType, seteventType] = useState<string>('');
   const [attachments, setattachments] = useState<File | null | string>(null);
+  const [projectedAmount, setProjectedAmount] = useState<number>(0);
+  // const [maxRefund, setMaxRefund] = useState<number>(0);
+  const [show, setShow] = useState(false);
+
+  useEffect(() => {
+
+  })
 
   const handleEmployeeNameChange = (e: ChangeEvent<HTMLInputElement>) => {
     setEmployeeName(e.target.value);
@@ -67,9 +76,49 @@ const Register: React.FC<Props> = ({ currentUser }) => {
     }
   };
 
+  const caclulateMaxRefund =  (eventCost: number, eventType: ReimburseableEvent | string): number => {
+    let maxRefund = 0;
+    switch(eventType) {
+      case 'University Course':
+        maxRefund = eventCost * .8
+        break;
+      case 'Seminar':
+        maxRefund = eventCost * .6;
+        break
+      case 'Certification Prep':
+        maxRefund = eventCost * .75;
+        break
+      case 'Certification':
+        maxRefund = eventCost;
+        break
+      case 'Technical':
+        maxRefund = eventCost * .9;
+        break
+      case 'Other':
+        maxRefund = eventCost * .3;
+        break
+    }
+    const projected = calculateProjectedAmount(maxRefund);
+    return projected;
+  }
+
+  const calculateProjectedAmount = (maxRefund: number): number => {
+    let availableFunds 
+    if(currentUser) {
+      availableFunds = currentUser?.availableAmount - currentUser?.pendingAmount;
+      if(availableFunds < maxRefund) {
+        return(currentUser?.availableAmount)
+      }
+      
+    }
+    return (maxRefund)
+  }
+
 
   const handleFormSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    const max = caclulateMaxRefund(Number(eventCost), eventType)
+    setProjectedAmount(max)
     await sendForm(
       employeeName, 
       employeeEmail, 
@@ -82,13 +131,16 @@ const Register: React.FC<Props> = ({ currentUser }) => {
       passingGrade,
       eventType,
       attachments,
+      max,
     )
+    setShow(true)
   }
   
   return (
     <div className="container mt-4">
 
       <h2>Tuition Reimbursement Request</h2>
+      
       
       <Form onSubmit={handleFormSubmit}>
         <Form.Row>
@@ -158,8 +210,8 @@ const Register: React.FC<Props> = ({ currentUser }) => {
         </Form.Group>
 
         <Form.Group as={Col} controlId="passingGrade">
-          <Form.Label>Passing Grade</Form.Label>
-          <Form.Control placeholder="A, 80%, N/A, etc." required onChange={handlePassingGradeChange} />
+          <Form.Label>Passing Grade (optional)</Form.Label>
+          <Form.Control placeholder="A, 80%, N/A, etc." onChange={handlePassingGradeChange} />
         </Form.Group>
         </Form.Row>
 
@@ -167,10 +219,11 @@ const Register: React.FC<Props> = ({ currentUser }) => {
           <Form.File type="file" id="exampleFormControlFile1" label="Add document about the event" onChange={handleAttachmentsChange} />
         </Form.Group>
 
-        <Button variant="dark" type="submit">
+        <Button variant="dark" type="submit" className="mb-4">
           Submit
         </Button>
       </Form>
+      {<AlertDismiss show={show} setShow={setShow} projectedAmount={projectedAmount} />}
     </div>
   )
 }

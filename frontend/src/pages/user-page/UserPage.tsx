@@ -16,6 +16,7 @@ type Props = {
 
 const UserPage: React.FC<Props> = ({ currentUser, setCurrentUser, setRequest }) => {
 
+
   const history = useHistory();
 
   if(!currentUser) {
@@ -65,3 +66,4 @@ const UserPage: React.FC<Props> = ({ currentUser, setCurrentUser, setRequest }) 
 }
 
 export default UserPage;
+

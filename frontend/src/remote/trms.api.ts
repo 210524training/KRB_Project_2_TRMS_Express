@@ -30,7 +30,8 @@ export const sendForm = async (
   gradingFormat: string, 
   passingGrade: string,
   eventType: string,
-  attachments: File | null | string
+  attachments: File | null | string,
+  projectedAmount: number,
 
   ): Promise<Reimbursement> => {
   const {data: formData} = await trmsClient.post<Reimbursement>(`/api/v1/${employeeName}/reimbursement-requests`, {
@@ -44,7 +45,8 @@ export const sendForm = async (
     gradingFormat, 
     passingGrade,
     eventType,
-    attachments
+    attachments,
+    projectedAmount,
   });
 
   return formData as Reimbursement;

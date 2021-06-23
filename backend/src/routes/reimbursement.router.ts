@@ -49,6 +49,8 @@ reimbursementRouter.post('/', async (req, res) => {
     eventType,
     attachments,
     comments,
+    projectedAmount,
+
   } = req.body;
 
   try {
@@ -60,12 +62,13 @@ reimbursementRouter.post('/', async (req, res) => {
       eventStartTime,
       eventLocation,
       eventDescription,
-      eventCost,
+      Number(eventCost),
       gradingFormat,
       passingGrade,
       eventType,
       attachments,
       comments,
+      projectedAmount,
     );
 
     if(isSubmissionSuccessful) {

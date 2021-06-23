@@ -30,12 +30,10 @@ const RequestsTable: React.FC<Props> = ({ currentUser,  setRequest}) => {
     history.push(`/workstation/${request.docid}`)
   }
   
-  const tableRows = tableData.map((item: any, index) => (
+  const tableRows = tableData.map((item: Reimbursement, index) => (
     <tr key={index} onClick={() => handleClick(item)}>
       <td>{(item.urgent ? 'Yes' : '')}</td>
       <td>{item.submissionDate}</td>
-      <td>{item.employeeName}</td>
-      <td>{item.employeeEmail}</td>
       <td>{item.eventType}</td>
       <td>{item.eventDescription}</td>
       <td>{item.eventLocation}</td>
@@ -44,6 +42,7 @@ const RequestsTable: React.FC<Props> = ({ currentUser,  setRequest}) => {
       <td>{item.eventStartTime}</td>
       <td>{item.gradingFormat}</td>
       <td>{item.comments}</td>
+      <td>{item.projectedAmount}</td>
     </tr>
   ))
 

@@ -17,6 +17,7 @@ export default interface Reimbursement {
     status: ReimbursementStatus;
     urgent: boolean;
     comments: string;
+    projectedAmount: number;
 }
 
 export type ReimburseableEvent = 'University Course' | 'Seminar' | 'Certification Prep' | 'Certification' | 'Technical' | 'Other'

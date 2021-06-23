@@ -38,6 +38,7 @@ class ReimbursementService {
     eventType: ReimburseableEvent,
     attachments: File| null,
     comments: string,
+    projectedAmount: number,
   ): Promise<boolean> {
     // server generated data for the request
     const submissionDate = new Date();
@@ -77,6 +78,7 @@ class ReimbursementService {
       currentStatus,
       isUrgent,
       comments,
+      projectedAmount,
     );
     const isSentToDynamo = await this.data.createNewReimbursementRequest(request);
     return isSentToDynamo;

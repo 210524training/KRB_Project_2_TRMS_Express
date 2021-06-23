@@ -20,6 +20,7 @@ export default class Reimbursement {
     public status: ReimbursementStatus,
     public urgent: boolean,
     public comments: string,
+    public projectedAmount: number,
   ) { }
 }
 
