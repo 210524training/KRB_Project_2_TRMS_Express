@@ -3,12 +3,15 @@ import express, { NextFunction, Request, Response } from 'express';
 import 'express-async-errors';
 import path from 'path';
 import StatusCodes from 'http-status-codes';
+import endOfYear from 'date-fns/endOfYear';
+import endOfDay from 'date-fns/endOfDay';
 
 import dotenv from 'dotenv';
 import cors from 'cors';
 import log from './utils/log';
 import baseRouter from './routes';
 import { IncorrectCredentialsError, UserNotFoundError } from './errors';
+import userService from './services/user/user.service';
 
 dotenv.config({ path: `${__dirname}/.env` });
 
@@ -77,4 +80,8 @@ app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
   next(err);
 });
 
+// Checks for the new year once per day, if true, resets users funds
+setInterval(userService.shouldResetReimbursementAmount, 8.64e+7);
+
+userService.resetAllReimbursementsAmounts();
 export default app;

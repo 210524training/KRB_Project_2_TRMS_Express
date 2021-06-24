@@ -3,6 +3,9 @@ import User from '../../models/user';
 import { IncorrectCredentialsError, UserNotAddedError, UserNotFoundError } from '../../errors';
 import Reimbursement from '../../models/reimbursement';
 import reimbursementDAO from '../../DAO/reimbursement.DAO';
+import endOfYear from 'date-fns/endOfYear';
+import endOfDay from 'date-fns/endOfDay';
+import endOfSecond from 'date-fns/endOfSecond'
 
 class UserService {
   constructor(
@@ -36,6 +39,22 @@ class UserService {
   async getUserRequests(username: User): Promise<Reimbursement[]> {
     const requests = await this.Rdata.getAllReimbursementRequestsByUsername(username);
     return requests as Reimbursement[];
+  }
+
+  async resetAllReimbursementsAmounts() {
+    const users: User[] = await this.data.getAll();
+    console.log(users)
+
+    users.forEach( async (user) => {
+      await this.data.updateReimbursementAmounts(user.username, 1000);
+    })
+  }
+
+  // eslint-disable-next-line class-methods-use-this
+  shouldResetReimbursementAmount() {
+    if(endOfDay(Date.now()).getTime() === endOfYear(Date.now()).getTime()) {
+      this.resetAllReimbursementsAmounts();
+    } 
   }
 }
 

@@ -8,6 +8,23 @@ class UserDAO {
     private docClient = dynamo,
   ) { }
 
+  async getAll(): Promise<User[]> {
+    const params: DocumentClient.ScanInput = {
+      TableName: 'trms_users',
+      ExpressionAttributeNames: {
+        '#r': 'role',
+      },
+      ProjectionExpression: 'id, username, password, address, phoneNumber, #r',
+    };
+    try {
+      const data = await this.docClient.scan(params).promise();
+      return data.Items as User[];
+    } catch(err) {
+      console.log('Fail to get all', err);
+    }
+    return [];
+  }
+
   async getByUsername(username: string): Promise<User | null> {
     const params: DocumentClient.GetItemInput = {
 
@@ -53,6 +70,25 @@ class UserDAO {
     } catch(err) {
       log.error(err);
       return false;
+    }
+  }
+
+  async updateReimbursementAmounts(username: string, amount: number): Promise<void> {
+    const params: DocumentClient.UpdateItemInput = {
+      TableName: 'trms_users',
+      Key: {
+        username,
+      },
+      UpdateExpression: 'SET availableAmount = :a',
+      ExpressionAttributeValues: {
+        ':a': amount,
+      },
+    };
+    try {
+      await this.docClient.update(params).promise();
+    } catch(err) {
+      console.log(err, username);
+      throw new Error(`Could not reset reimbursable item for: ${username}`);
     }
   }
 }
