@@ -1,9 +1,9 @@
 import React, { ChangeEvent, useState } from 'react';
 import { Button, Col, Form, Table } from 'react-bootstrap';
 import { useHistory } from 'react-router-dom';
-import Reimbursement, { ReimbursementStatus } from '../../models/reimbursement';
+import Reimbursement from '../../models/reimbursement';
 import User from '../../models/user';
-import { sendStatusUpdate } from '../../remote/trms.api';
+import { sendStatusUpdate, sendUpdateFinalGrade } from '../../remote/trms.api';
 
 type Props = {
   request: Reimbursement | undefined;
@@ -118,9 +118,9 @@ const DetailedRequest: React.FC<Props> = ({request, currentUser}) => {
     )
   }
 
-  const handleOnApproveOrReject = (docid: string | undefined, status: ReimbursementStatus | undefined | string) => {
+  const handleOnApproveOrReject = (docid: string | undefined, status: Reimbursement | undefined | string) => {
 
-    let newStatus: ReimbursementStatus;
+    let newStatus: string;
 
     switch(status) {
       case 'Reject':
@@ -152,7 +152,7 @@ const DetailedRequest: React.FC<Props> = ({request, currentUser}) => {
 
   const handleOnReturn = (docid: string | undefined, sendTo: ReRoute | undefined, comments: string) => {
     
-    let newStatus: ReimbursementStatus;
+    let newStatus: string;
 
     switch(sendTo) {
       case 'Send to Employee':
@@ -181,12 +181,16 @@ const DetailedRequest: React.FC<Props> = ({request, currentUser}) => {
   }
 
   const handleUpdateGradeChange = (e: ChangeEvent<HTMLInputElement>) => {
+    
     const gradeUpdate = e.target.value;
+    console.log('oh change', gradeUpdate);
     setGrade(gradeUpdate);
   }
 
-  const handleUpdateGrade = (grade: string, request: Reimbursement | undefined) => {
+  const handleUpdateGrade = async (grade: string, request: Reimbursement | undefined) => {
     // call axios
+    console.log('updategrade', grade);
+    await sendUpdateFinalGrade(grade, request?.docid, request?.comments)
     history.goBack()
   }
 
@@ -218,8 +222,7 @@ const DetailedRequest: React.FC<Props> = ({request, currentUser}) => {
                     className="mt-2"
                     variant="dark" 
                     size="lg" 
-                    onClick={() => handleUpdateGrade(grade, request
-                    )}>
+                    onClick={() => handleUpdateGrade(grade, request)}>
                     Update Final Grade
                   </Button>{' '}
                 </Form.Group>

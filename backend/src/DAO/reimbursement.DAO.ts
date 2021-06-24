@@ -40,6 +40,7 @@ class ReimbursementDAO {
   }
 
   async updateRequestFinalGrade(docid: string, finalgrade: string | undefined): Promise<boolean> {
+    console.log('insidesao', docid, finalgrade);
     const params: DocumentClient.UpdateItemInput = {
       TableName: 'trms_reimbursements',
       Key: {

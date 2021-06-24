@@ -23,7 +23,6 @@ const Register: React.FC<Props> = ({ currentUser }) => {
   const [eventType, seteventType] = useState<string>('');
   const [attachments, setattachments] = useState<File | null | string>(null);
   const [projectedAmount, setProjectedAmount] = useState<number>(0);
-  // const [maxRefund, setMaxRefund] = useState<number>(0);
   const [show, setShow] = useState(false);
 
   useEffect(() => {

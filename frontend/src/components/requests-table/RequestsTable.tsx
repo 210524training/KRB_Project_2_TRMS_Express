@@ -23,7 +23,7 @@ const RequestsTable: React.FC<Props> = ({ currentUser, setRequest }) => {
         setTableData(data)
       }
     })();
-  },[currentUser])
+  },[])
 
   const handleClick = (request: any): void => {
     setRequest(request);

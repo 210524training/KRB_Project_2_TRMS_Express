@@ -52,8 +52,6 @@ const RequestsTable: React.FC<Props> = ({ currentUser,  setRequest}) => {
         <tr>
           <th>Urgent</th>
           <th>Submitted</th>
-          <th>Username</th>
-          <th>Email</th>
           <th>Event</th>
           <th>Description</th>
           <th>Location</th>
@@ -62,6 +60,7 @@ const RequestsTable: React.FC<Props> = ({ currentUser,  setRequest}) => {
           <th>Start Time</th>
           <th>Graded By</th>
           <th>Comments</th>
+          <th>Projected Reimbursement</th>
         </tr>
       </thead>
       <tbody>

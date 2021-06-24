@@ -71,8 +71,8 @@ class ReimbursementService {
       eventCost,
       gradingFormat,
       passingGrade,
-      undefined,
-      undefined,
+      '',
+      null,
       eventType,
       attachments,
       currentStatus,
@@ -88,16 +88,12 @@ class ReimbursementService {
    * Allows user to update request's final grade attribute
    */
   async updateFinalGrade(docid: string, finalgrade: string | undefined): Promise<boolean> {
-    // Check to verify docid exists and matches provided docid
-    const verifyDocId = await this.data.getReimbursementRequestByDocId(docid);
-    if(verifyDocId.docid === docid) {
-      const isUpdated = await this.data.updateRequestFinalGrade(docid, finalgrade);
-      if(isUpdated) {
-        return true;
-      }
-      throw new Error('Grade could not be updated');
+    console.log(docid, finalgrade);
+    const isUpdated = await this.data.updateRequestFinalGrade(docid, finalgrade);
+    if(isUpdated) {
+      return true;
     }
-    throw new Error('Reimburesment request does not exist');
+    throw new Error('Grade could not be updated');
   }
 
   /**

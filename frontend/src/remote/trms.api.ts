@@ -1,4 +1,4 @@
-import Reimbursement, { ReimbursementStatus } from "../models/reimbursement";
+import Reimbursement from "../models/reimbursement";
 import User from "../models/user";
 import trmsClient from "./trms.client";
 
@@ -11,10 +11,18 @@ export const sendLogin = async (username: string, password: string): Promise<Use
   return user as User;
 }
 
-export const sendStatusUpdate= async (docid: string | undefined, status: ReimbursementStatus | undefined, comments: string | undefined): Promise<void> => {
+export const sendStatusUpdate = async (docid: string | undefined, status: string | undefined, comments: string | undefined): Promise<void> => {
   await trmsClient.put<any>(`/api/v1/${docid}/reimbursement-requests/${docid}/status`, {
     docid,
     status,
+    comments,
+  });
+}
+
+export const sendUpdateFinalGrade = async(grade: string, docid: undefined | string, comments: string | undefined): Promise<void> => {
+  await trmsClient.put<any>(`/api/v1/${docid}/reimbursement-requests/${docid}`, {
+    grade,
+    docid,
     comments,
   });
 }
@@ -52,8 +60,8 @@ export const sendForm = async (
   return formData as Reimbursement;
 }
 
-export const getUserRequests = async (user: User): Promise<Reimbursement[]> => {
-  const {data: request} = await trmsClient.get<Reimbursement[]>(`/api/v1/${user.username}/reimbursement-requests`);
+export const getUserRequests = async (user: User | undefined): Promise<Reimbursement[]> => {
+  const {data: request} = await trmsClient.get<Reimbursement[]>(`/api/v1/${user?.username}/reimbursement-requests`);
 
   return request as Reimbursement[];
 }

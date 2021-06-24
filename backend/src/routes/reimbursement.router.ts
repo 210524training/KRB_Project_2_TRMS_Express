@@ -88,8 +88,9 @@ reimbursementRouter.post('/', async (req, res) => {
  */
 reimbursementRouter.put('/:docid', async (req, res) => {
   const { docid } = req.body;
-  const { finalgrade } = req.body;
-  res.json(await ReimbursementService.updateFinalGrade(docid, finalgrade));
+  const { grade } = req.body;
+  console.log(docid, grade, req.body);
+  res.json(await ReimbursementService.updateFinalGrade(docid, grade));
 });
 
 reimbursementRouter.put('/:docid/status', async (req, res) => {
