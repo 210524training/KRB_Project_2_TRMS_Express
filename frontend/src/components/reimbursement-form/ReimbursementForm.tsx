@@ -70,8 +70,9 @@ const Register: React.FC<Props> = ({ currentUser }) => {
   };
 
   const handleAttachmentsChange = (e: ChangeEvent<HTMLInputElement>) => {
+    console.log(e.target)
     if(e.target.files) {
-      setattachments(e.target.files[0].name)
+      setattachments(e.target.files[0])
     }
   };
 
@@ -218,7 +219,7 @@ const Register: React.FC<Props> = ({ currentUser }) => {
         </Form.Row>
 
         <Form.Group>
-          <Form.File type="file" id="exampleFormControlFile1" label="Add document about the event" onChange={handleAttachmentsChange} />
+          <Form.File type="file" id="File" label="Add document about the event" onChange={handleAttachmentsChange} />
         </Form.Group>
 
         <Button variant="dark" type="submit" className="mb-4">

@@ -83,5 +83,11 @@ app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
 // Checks for the new year once per day, if true, resets users funds
 setInterval(userService.shouldResetReimbursementAmount, 8.64e+7);
 
+// Check for reimbursement age once per day, and automatically approves requests after 3? days
+setInterval(() => {
+  //TODO: Implement actual logic
+  console.log("testing")
+}, 8.64e+7)
+
 userService.resetAllReimbursementsAmounts();
 export default app;

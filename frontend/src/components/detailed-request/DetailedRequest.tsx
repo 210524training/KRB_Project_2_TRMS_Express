@@ -123,7 +123,7 @@ const DetailedRequest: React.FC<Props> = ({request, currentUser}) => {
         </tr>
         <tr>
           <td>Attachments:</td>
-          <td>{`${attachments}`}</td>
+          <td><iframe title='file' src={`${attachments}`}/>{attachments}</td>
         </tr>
       </>
     )
