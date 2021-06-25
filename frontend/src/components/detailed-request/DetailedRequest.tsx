@@ -20,6 +20,7 @@ const DetailedRequest: React.FC<Props> = ({request, currentUser}) => {
   const [amount, setAmount] = useState<number>(0);
 
   const history = useHistory();
+  console.log(request);
 
   const populateTable = (request: Reimbursement | undefined) => {
     if(!request) {
@@ -39,8 +40,7 @@ const DetailedRequest: React.FC<Props> = ({request, currentUser}) => {
       eventStartDate,
       eventStartTime,
       gradingFormat,
-      finalGrade,
-      finalGradeSatisfactory,
+      finalgrade,
       attachments,
       comments,
       exceedingFunds,
@@ -103,11 +103,7 @@ const DetailedRequest: React.FC<Props> = ({request, currentUser}) => {
         </tr>
         <tr>
           <td>Employee's Final Grade/Results:</td>
-          <td>{finalGrade}</td>
-        </tr>
-        <tr>
-          <td>Is Final Assessment Acceptable?</td>
-          <td>{finalGradeSatisfactory ? 'Yes' : 'No'}</td>
+          <td>{finalgrade}</td>
         </tr>
         <tr>
           <td>Comments:</td>
@@ -123,20 +119,23 @@ const DetailedRequest: React.FC<Props> = ({request, currentUser}) => {
         </tr>
         <tr>
           <td>Attachments:</td>
-          <td><iframe title='file' src={`${attachments}`}/>{attachments}</td>
+          <td>
+            {/* <iframe title='file' src={`${attachments}`}/> */}
+            {attachments}</td>
         </tr>
       </>
     )
   }
 
   const sendReimbursementToUser = async (request: Reimbursement | undefined): Promise<void> => {
+    console.log('sendRiembursementToUser', request)
     const user = request?.employeeName;
     const refund = request?.projectedAmount;
     await sendRefund(user, refund);
   }
 
   const handleOnApproveOrReject = (docid: string | undefined, status: undefined | string, request: Reimbursement | undefined) => {
-
+    console.log('handleOnApproveOrReject', docid, status, request)
     let newStatus: string;
 
     switch(status) {
@@ -156,8 +155,8 @@ const DetailedRequest: React.FC<Props> = ({request, currentUser}) => {
         // check if grade was submitted 
         // if true call refund method, set status to approved
         // else Pending
-        console.log(request?.finalGrade)
-        if(!request?.finalGrade) {
+        console.log(request?.finalgrade)
+        if(!request?.finalgrade) {
           newStatus = 'Awaiting Benefits Coordinator';
         } else {
           sendReimbursementToUser(request);
@@ -165,7 +164,7 @@ const DetailedRequest: React.FC<Props> = ({request, currentUser}) => {
         }
         break;
       case 'Pending Reimbursement':
-        if(!request?.finalGrade) {
+        if(!request?.finalgrade) {
           newStatus = 'Awaiting Benefits Coordinator';
         } else {
           sendReimbursementToUser(request);

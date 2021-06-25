@@ -45,7 +45,7 @@ const RequestsTable: React.FC<Props> = ({ currentUser, setRequest }) => {
       <td>{item.eventStartDate}</td>
       <td>{item.eventStartTime}</td>
       <td>{item.gradingFormat}</td>
-      <td>{item.finalGrade}</td>
+      <td>{item.finalgrade}</td>
       <td>{item.comments}</td>
       
     </tr>

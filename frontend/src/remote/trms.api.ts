@@ -94,7 +94,10 @@ export const sendUpdateAmount = async(docid: string | undefined, amount: number,
 }
 
 export const sendRefund = async (username: string | undefined, refund: number | undefined): Promise<void> => {
-  await trmsClient.put<any>(`/api/v1/:user/refund`)
+  await trmsClient.put<any>(`/api/v1/:user/refund`, {
+  username,
+  refund,
+ }); 
 }
 
 export const sendDeleteRequest = async (request: Reimbursement | undefined): Promise<void> => {
