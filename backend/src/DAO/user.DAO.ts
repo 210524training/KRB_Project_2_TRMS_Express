@@ -88,7 +88,7 @@ class UserDAO {
       await this.docClient.update(params).promise();
     } catch(err) {
       console.log(err, username);
-      throw new Error(`Could not reset reimbursable item for: ${username}`);
+      throw new Error(`Could not set reimbursable item for: ${username}`);
     }
   }
 }

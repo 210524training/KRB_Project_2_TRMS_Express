@@ -20,6 +20,14 @@ class ReimbursementService {
     return true;
   }
 
+  async getAll(): Promise<Reimbursement[]> {
+    return this.data.getAll();
+  }
+
+  async deleteRequestByDocid(docid: string): Promise<void> {
+    await this.data.deleteRequestByDocid(docid);
+  }
+
   /**
    * Following method is responsible for converting user data into a Reimbursement
    * TODO: Dates need to be formatted into so they are more uniformed.
@@ -57,7 +65,7 @@ class ReimbursementService {
     default:
       currentStatus = 'Awaiting Direct Supervisor';
     }
-
+    console.log(passingGrade);
     // create new request object
     const request = new Reimbursement(
       docid,
@@ -72,7 +80,7 @@ class ReimbursementService {
       gradingFormat,
       passingGrade,
       '',
-      null,
+      false,
       eventType,
       attachments,
       currentStatus,
@@ -90,6 +98,22 @@ class ReimbursementService {
   async updateFinalGrade(docid: string, finalgrade: string | undefined): Promise<boolean> {
     console.log(docid, finalgrade);
     const isUpdated = await this.data.updateRequestFinalGrade(docid, finalgrade);
+    if(isUpdated) {
+      return true;
+    }
+    throw new Error('Grade could not be updated');
+  }
+
+  /**
+   * Allows user to update request's final grade attribute
+   */
+  async updateAmount(
+    docid: string,
+    amount: number,
+    comment: string,
+    isExceedingFunds: boolean,
+  ): Promise<boolean> {
+    const isUpdated = await this.data.updateRequestAmount(docid, amount, comment, isExceedingFunds);
     if(isUpdated) {
       return true;
     }
@@ -158,6 +182,10 @@ class ReimbursementService {
       return [];
     }
     return data;
+  }
+
+  async deleteRequest(docid: string): Promise<void> {
+    await this.data.deleteRequestByDocid(docid);
   }
 }
 

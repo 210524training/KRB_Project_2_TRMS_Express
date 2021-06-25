@@ -12,7 +12,7 @@ export default class Reimbursement {
     public eventDescription: string,
     public eventCost: number,
     public gradingFormat: 'Grade' | 'Presentation',
-    public passingGrade: string,
+    public passingGrade: string = 'C',
     public finalgrade: string = '',
     public finalGradeSatisfactory: boolean | null = null,
     public eventType: ReimburseableEvent,
@@ -21,6 +21,7 @@ export default class Reimbursement {
     public urgent: boolean,
     public comments: string,
     public projectedAmount: number,
+    public exceedingFunds: boolean = false,
   ) { }
 }
 

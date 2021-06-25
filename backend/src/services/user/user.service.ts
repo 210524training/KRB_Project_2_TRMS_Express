@@ -43,11 +43,14 @@ class UserService {
 
   async resetAllReimbursementsAmounts() {
     const users: User[] = await this.data.getAll();
-    console.log(users)
 
     users.forEach( async (user) => {
       await this.data.updateReimbursementAmounts(user.username, 1000);
     })
+  }
+
+  async updateAvailableAmount(username: string, amount: number): Promise<void> {
+    const update = await this.data.updateReimbursementAmounts(username, amount);
   }
 
   // eslint-disable-next-line class-methods-use-this

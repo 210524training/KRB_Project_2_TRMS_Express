@@ -42,6 +42,17 @@ userRouter.put('/', async (req: express.Request<unknown, unknown, Reimbursement,
   }
 });
 
+userRouter.put('/refund', async (req, res) => {
+  const { username, refund } = req.body;
+  try {
+    await UserService.updateAvailableAmount(username, refund);
+    res.sendStatus(200);
+  } catch(err) {
+    log.error(err);
+    res.sendStatus(400);
+  }
+});
+
 userRouter.post('/', async (req: express.Request<unknown, unknown, User, unknown, {}>, res) => {
   const { username, password, email } = req.body;
   res.json(await UserService.registorUser(username, password, email));

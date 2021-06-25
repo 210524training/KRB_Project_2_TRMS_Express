@@ -77,3 +77,28 @@ export const getRequestsPendingPayment = async (): Promise<Reimbursement[]> => {
 
   return requests as Reimbursement[];
 }
+
+export const getAllRequests= async (): Promise<Reimbursement[]> => {
+  const {data: requests} = await trmsClient.get<Reimbursement[]>('/api/v1/:user/reimbursement-requests/all')
+
+  return requests as Reimbursement[];
+}
+
+export const sendUpdateAmount = async(docid: string | undefined, amount: number, comment: string, isExceedingFunds: boolean): Promise<void> => {
+  await trmsClient.put<any>(`/api/v1/${docid}/reimbursement-requests/${docid}/amount`, {
+    docid,
+    amount,
+    comment,
+    isExceedingFunds,
+  });
+}
+
+export const sendRefund = async (username: string | undefined, refund: number | undefined): Promise<void> => {
+  await trmsClient.put<any>(`/api/v1/:user/refund`)
+}
+
+export const sendDeleteRequest = async (request: Reimbursement | undefined): Promise<void> => {
+  const {data: requests} = await trmsClient.delete<any>(`/api/v1/${request?.docid}/reimbursement-requests/${request?.docid}`)
+
+  return requests
+}

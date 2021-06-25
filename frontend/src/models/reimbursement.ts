@@ -10,7 +10,7 @@ export default interface Reimbursement {
     eventCost: number;
     gradingFormat: 'Grade' | 'Presentation';
     passingGrade: string;
-    finalgrade: string | undefined;
+    finalGrade: string | undefined;
     finalGradeSatisfactory: boolean | undefined;
     eventType: ReimburseableEvent;
     attachments: File | null;
@@ -18,6 +18,7 @@ export default interface Reimbursement {
     urgent: boolean;
     comments: string;
     projectedAmount: number;
+    exceedingFunds: boolean,
 }
 
 export type ReimburseableEvent = 'University Course' | 'Seminar' | 'Certification Prep' | 'Certification' | 'Technical' | 'Other'

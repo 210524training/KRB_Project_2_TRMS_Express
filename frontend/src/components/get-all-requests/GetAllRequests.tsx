@@ -3,7 +3,7 @@ import { Table } from 'react-bootstrap';
 import { useHistory } from 'react-router-dom';
 import Reimbursement from '../../models/reimbursement';
 import User from '../../models/user';
-import { getUserRequests } from '../../remote/trms.api';
+import { getAllRequests } from '../../remote/trms.api';
 
 type Props = {
   setRequest: Dispatch<SetStateAction<undefined | Reimbursement>>;
@@ -19,7 +19,7 @@ const RequestsTable: React.FC<Props> = ({ currentUser, setRequest }) => {
   useEffect(() => {
     (async function populateTable(): Promise<void> {
       if(currentUser) {
-        const data =  await getUserRequests(currentUser)
+        const data =  await getAllRequests()
         setTableData(data)
       }
     })();
@@ -40,11 +40,14 @@ const RequestsTable: React.FC<Props> = ({ currentUser, setRequest }) => {
       <td>{item.eventDescription}</td>
       <td>{item.eventLocation}</td>
       <td>{item.eventCost}</td>
+      <td>{item.projectedAmount}</td>
+      <td>{item.exceedingFunds}</td>
       <td>{item.eventStartDate}</td>
       <td>{item.eventStartTime}</td>
       <td>{item.gradingFormat}</td>
+      <td>{item.finalGrade}</td>
       <td>{item.comments}</td>
-      <td>{item.projectedAmount}</td>
+      
     </tr>
   ))
 
@@ -60,11 +63,14 @@ const RequestsTable: React.FC<Props> = ({ currentUser, setRequest }) => {
           <th>Description</th>
           <th>Location</th>
           <th>Cost</th>
+          <th>Reimburse Amount</th>
+          <th>Exceeding Funds</th>
           <th>Start Date</th>
           <th>Start Time</th>
           <th>Graded By</th>
+          <th>Actual Grade</th>
           <th>Comments</th>
-          <th>projectedAmount</th>
+          
         </tr>
       </thead>
       <tbody>

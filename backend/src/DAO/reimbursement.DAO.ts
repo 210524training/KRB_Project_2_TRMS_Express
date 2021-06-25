@@ -23,6 +23,19 @@ class ReimbursementDAO {
     return false;
   }
 
+  async getAll(): Promise<Reimbursement[]> {
+    const params: DocumentClient.ScanInput = {
+      TableName: 'trms_reimbursements',
+    };
+
+    const result = await this.docClient.scan(params).promise();
+    if(result.Items) {
+      log.debug(result);
+      return result.Items as Reimbursement[];
+    }
+    throw new Error('Reimbursement request not found');
+  }
+
   async getReimbursementRequestByDocId(docid: string): Promise<Reimbursement> {
     const params: DocumentClient.GetItemInput = {
       TableName: 'trms_reimbursements',
@@ -153,6 +166,53 @@ class ReimbursementDAO {
       return true;
     }
     throw new Error('Cannot update request');
+  }
+
+  async updateRequestAmount(
+    docid: string,
+    amount: number,
+    comment: string,
+    isExceedingFunds: boolean,
+  ): Promise<boolean> {
+    const params: DocumentClient.UpdateItemInput = {
+      TableName: 'trms_reimbursements',
+      Key: {
+        docid,
+      },
+      UpdateExpression: 'SET #a = :v, #c = :c, #e = :e',
+      ExpressionAttributeNames: {
+        '#a': 'projectedAmount',
+        '#c': 'comments',
+        '#e': 'exceedingFunds',
+      },
+      ExpressionAttributeValues: {
+        ':v': amount,
+        ':c': comment,
+        ':e': isExceedingFunds,
+      },
+      ReturnValues: 'UPDATED_NEW',
+    };
+
+    const isUpdated = await this.docClient.update(params).promise();
+    if(isUpdated) {
+      return true;
+    }
+    throw new Error('Cannot update request');
+  }
+
+  async deleteRequestByDocid(docid: string): Promise<void> {
+    const params: DocumentClient.DeleteItemInput = {
+      TableName: 'trms_reimbursements',
+      Key: {
+        docid,
+      },
+    };
+
+    try {
+      await this.docClient.delete(params).promise();
+    } catch(err) {
+      log.error(err);
+    }
   }
 }
 

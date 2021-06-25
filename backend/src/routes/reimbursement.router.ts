@@ -25,6 +25,19 @@ reimbursementRouter.get('/', async (req, res) => {
   }
 });
 
+reimbursementRouter.get('/all', async (req, res) => {
+  try {
+    const didPopulateBin = await ReimbursementService.getAll();
+    if(didPopulateBin) {
+      log.debug(didPopulateBin);
+      res.send(didPopulateBin);
+    }
+  } catch(err) {
+    log.error(err);
+    res.sendStatus(400);
+  }
+});
+
 /**
  * This route will:
  * create logged in user's reimburement request
@@ -100,8 +113,21 @@ reimbursementRouter.put('/:docid/status', async (req, res) => {
   res.json(await ReimbursementService.updateStatus(docid, status, comments));
 });
 
+reimbursementRouter.put('/:docid/amount', async (req, res) => {
+  const { docid } = req.body;
+  const { amount } = req.body;
+  const { comment } = req.body;
+  const { isExceedingFunds } = req.body;
+  res.json(await ReimbursementService.updateAmount(docid, amount, comment, isExceedingFunds));
+});
+
 reimbursementRouter.get('/pending', async (req, res) => {
   res.json(await ReimbursementService.getPendingReimbursements());
+});
+
+reimbursementRouter.delete('/:docid', async (req, res) => {
+  const { docid } = req.params;
+  res.json(await ReimbursementService.deleteRequest(docid));
 });
 
 export default reimbursementRouter;

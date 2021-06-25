@@ -116,6 +116,9 @@ const Register: React.FC<Props> = ({ currentUser }) => {
 
   const handleFormSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    if(!passingGrade) {
+      setpassingGrade('C')
+    }
     const max = caclulateMaxRefund(Number(eventCost), eventType)
     setProjectedAmount(max)
     await sendForm(

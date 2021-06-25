@@ -1,9 +1,9 @@
-import React, { ChangeEvent, useState } from 'react';
+import React, { ChangeEvent, FormEvent, useState } from 'react';
 import { Button, Col, Form, Table } from 'react-bootstrap';
 import { useHistory } from 'react-router-dom';
 import Reimbursement from '../../models/reimbursement';
 import User from '../../models/user';
-import { sendStatusUpdate, sendUpdateFinalGrade } from '../../remote/trms.api';
+import { sendDeleteRequest, sendRefund, sendStatusUpdate, sendUpdateAmount, sendUpdateFinalGrade } from '../../remote/trms.api';
 
 type Props = {
   request: Reimbursement | undefined;
@@ -17,6 +17,7 @@ const DetailedRequest: React.FC<Props> = ({request, currentUser}) => {
   const [showReroute, setShowReroute] = useState<boolean>(false);
   const [returnMessage, setReturnMessage] = useState<string>('');
   const [grade, setGrade] = useState<string>('');
+  const [amount, setAmount] = useState<number>(0);
 
   const history = useHistory();
 
@@ -38,10 +39,12 @@ const DetailedRequest: React.FC<Props> = ({request, currentUser}) => {
       eventStartDate,
       eventStartTime,
       gradingFormat,
-      finalgrade,
+      finalGrade,
       finalGradeSatisfactory,
       attachments,
       comments,
+      exceedingFunds,
+      projectedAmount,
     } = request;
 
     return (
@@ -100,7 +103,7 @@ const DetailedRequest: React.FC<Props> = ({request, currentUser}) => {
         </tr>
         <tr>
           <td>Employee's Final Grade/Results:</td>
-          <td>{finalgrade}</td>
+          <td>{finalGrade}</td>
         </tr>
         <tr>
           <td>Is Final Assessment Acceptable?</td>
@@ -111,6 +114,14 @@ const DetailedRequest: React.FC<Props> = ({request, currentUser}) => {
           <td>{comments}</td>
         </tr>
         <tr>
+          <td>Amount to Fund:</td>
+          <td>{`$${projectedAmount}`}</td>
+        </tr>
+        <tr>
+          <td>Funds Exceeded:</td>
+          <td>{exceedingFunds ? 'Yes' : 'No'}</td>
+        </tr>
+        <tr>
           <td>Attachments:</td>
           <td>{`${attachments}`}</td>
         </tr>
@@ -118,7 +129,13 @@ const DetailedRequest: React.FC<Props> = ({request, currentUser}) => {
     )
   }
 
-  const handleOnApproveOrReject = (docid: string | undefined, status: Reimbursement | undefined | string) => {
+  const sendReimbursementToUser = async (request: Reimbursement | undefined): Promise<void> => {
+    const user = request?.employeeName;
+    const refund = request?.projectedAmount;
+    await sendRefund(user, refund);
+  }
+
+  const handleOnApproveOrReject = (docid: string | undefined, status: undefined | string, request: Reimbursement | undefined) => {
 
     let newStatus: string;
 
@@ -136,10 +153,24 @@ const DetailedRequest: React.FC<Props> = ({request, currentUser}) => {
         newStatus = 'Department Head Approval';
         break;
       case 'Awaiting Benefits Coordinator':
-        newStatus = 'Pending Reimbursement';
+        // check if grade was submitted 
+        // if true call refund method, set status to approved
+        // else Pending
+        console.log(request?.finalGrade)
+        if(!request?.finalGrade) {
+          newStatus = 'Awaiting Benefits Coordinator';
+        } else {
+          sendReimbursementToUser(request);
+          newStatus = 'Reimbursement Approved'
+        }
         break;
       case 'Pending Reimbursement':
-        newStatus = 'Reimbursement Approved'
+        if(!request?.finalGrade) {
+          newStatus = 'Awaiting Benefits Coordinator';
+        } else {
+          sendReimbursementToUser(request);
+          newStatus = 'Reimbursement Approved'
+        }
         break;
       default:
       throw new Error('Could not update status of request')
@@ -183,16 +214,41 @@ const DetailedRequest: React.FC<Props> = ({request, currentUser}) => {
   const handleUpdateGradeChange = (e: ChangeEvent<HTMLInputElement>) => {
     
     const gradeUpdate = e.target.value;
-    console.log('oh change', gradeUpdate);
     setGrade(gradeUpdate);
   }
 
   const handleUpdateGrade = async (grade: string, request: Reimbursement | undefined) => {
     // call axios
-    console.log('updategrade', grade);
     await sendUpdateFinalGrade(grade, request?.docid, request?.comments)
     history.goBack()
   }
+
+  const handleAmountChange = (e: ChangeEvent<HTMLInputElement>) => {
+    setAmount(Number(e.target.value));
+  }
+
+  const handleChangeReimbursement = async (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+
+    const amt: number = amount;
+    const cmt: string = returnMessage;
+    const isExceedingFunds = () => {
+      if(request) {
+        if(amt > request.projectedAmount) {
+          return true;
+        }
+      }
+      return false;
+    }  
+    sendUpdateAmount(request?.docid, amt, cmt, isExceedingFunds());
+    history.goBack();
+  }
+
+  const handleDeleteRequest = (form: Reimbursement | undefined) => {
+    sendDeleteRequest(form);
+    history.goBack();
+  }
+
 
   const goBack = () => {
     history.goBack()
@@ -215,7 +271,8 @@ const DetailedRequest: React.FC<Props> = ({request, currentUser}) => {
         {
           currentUser?.username === request?.employeeName ?
           (<>
-            <div className="mt-2 container">
+            <div className="mt-4 container">
+              <hr />
                 <Form.Group controlId="username">
                   <Form.Control type="text" placeholder="Enter Final Grade" onChange={handleUpdateGradeChange} />
                   <Button 
@@ -226,6 +283,19 @@ const DetailedRequest: React.FC<Props> = ({request, currentUser}) => {
                     Update Final Grade
                   </Button>{' '}
                 </Form.Group>
+
+                <Form.Group controlId="username">
+                  <hr />
+                  <br />
+                  <p>THIS WILL DELETE YOUR REQUEST!</p>
+                  <Button 
+                    className="mt-2"
+                    variant="dark" 
+                    size="lg" 
+                    onClick={() => handleDeleteRequest(request)}>
+                    Cancel Request
+                  </Button>{' '}
+                </Form.Group>
             </div>
           </> )
 
@@ -233,10 +303,10 @@ const DetailedRequest: React.FC<Props> = ({request, currentUser}) => {
           
           (<>
             <div className="mt-2 container">
+              <hr />
               <Button variant="dark" 
                 size="lg" 
-                onClick={() => handleOnApproveOrReject(request?.docid, request?.status
-                )}>
+                onClick={() => handleOnApproveOrReject(request?.docid, request?.status, request)}>
                 Approve
               </Button>{' '}
             
@@ -256,10 +326,37 @@ const DetailedRequest: React.FC<Props> = ({request, currentUser}) => {
           (currentUser?.role === 'Benefits Coordinator') ? 
           (<>
           <div className="mt-2 container">
+            <hr />
+            <h4>Update Reimbursement Amount</h4>
+            <Form onSubmit={handleChangeReimbursement}>
+              <Form.Row>
+                <Form.Group as={Col} controlId="amount">
+                  <Form.Label>New Amount</Form.Label>
+                  <Form.Control  type="number" placeholder="Enter New Amount" required onChange={handleAmountChange} />
+                </Form.Group>
+                <Form.Group as={Col} controlId="amount">
+                  <Form.Label>Comments</Form.Label>
+                  <Form.Control  type="text" placeholder="Enter Reason" required onChange={handleReturnMessageChange} />
+                </Form.Group>
+                
+              </Form.Row>
+              <Button 
+                  type='submit'
+                  variant="dark" 
+                  size="lg">
+                    Change Reimbursement Amount
+                </Button>{' '}
+            </Form>
+            
+          </div>
+
+          <div className="mt-4 container">
+            <hr />
+            <h4>Reject Request</h4>
             <Button variant="danger" 
+              className="mt-4"
               size="lg" 
-              onClick={() => handleOnApproveOrReject(request?.docid, 'Reject'
-              )}>
+              onClick={() => handleOnApproveOrReject(request?.docid, 'Reject', request)}>
                 Reject
             </Button>{' '}
           </div>

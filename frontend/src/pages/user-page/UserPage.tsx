@@ -1,6 +1,7 @@
 import React, { Dispatch, SetStateAction } from 'react';
 import { Button, Navbar, Tab, Tabs } from 'react-bootstrap';
 import { Switch, useHistory } from 'react-router-dom';
+import GetAllRequests from '../../components/get-all-requests/GetAllRequests';
 import MyRequestsTable from '../../components/my-requests-table/MyRequestsTable';
 import Profile from '../../components/profile/Profile';
 import ReimbursementForm from '../../components/reimbursement-form/ReimbursementForm';
@@ -54,6 +55,12 @@ const UserPage: React.FC<Props> = ({ currentUser, setCurrentUser, setRequest }) 
           <Tab eventKey="inbox" title="Reimbursement Inbox">
             <RequestsTable currentUser={currentUser} setRequest={setRequest} />
           </Tab>
+          {
+          currentUser?.role === "Benefits Coordinator" ? 
+          <Tab eventKey="allRequests" title="All Requests">
+            <GetAllRequests currentUser={currentUser} setRequest={setRequest} />
+          </Tab> : null
+          }
           <Tab eventKey="myprofile" title="My Profile">
             <Profile currentUser={currentUser} />
           </Tab>
