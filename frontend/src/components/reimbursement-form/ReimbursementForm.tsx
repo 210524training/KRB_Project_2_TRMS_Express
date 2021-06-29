@@ -177,7 +177,7 @@ const Register: React.FC<Props> = ({ currentUser }) => {
 
           <Form.Group as={Col} controlId="eventStartDate">
           <Form.Label>Event Start</Form.Label>
-              <Form.Control type="date" min={(new Date(today.getFullYear(), today.getMonth(), today.getDate()+7)).toISOString().slice(0, 10)} required onChange={handleEventStartDateChange} />
+              <Form.Control type="date" min={new Date(today.getFullYear(), today.getMonth(), today.getDate()+7).toISOString().slice(0, 10)} required onChange={handleEventStartDateChange} />
           </Form.Group>
 
           <Form.Group as={Col} controlId="eventStartTime">
