@@ -53,12 +53,6 @@ To-do list:
 - `npm start`
 > Notice that your will need to manually add users to the DynamoDB users table on the AWS console, I intend to add a script to auto populate the table in the future.
 
-## Usage
-
-> WIP
-
-<img src="https://trms-screenshots.s3.us-west-1.amazonaws.com/signin.JPG" width="200" height="400" />
-
 ## License
 
 This project uses the following license: [MIT](./LICENSE).
